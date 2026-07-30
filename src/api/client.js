@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -10,7 +10,7 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor - add JWT token to every request
+// Request interceptor - add JWT token
 apiClient.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().accessToken;
@@ -74,7 +74,6 @@ apiClient.interceptors.response.use(
         }
       }
 
-      // Queue requests while refreshing
       return new Promise((resolve) => {
         addRefreshSubscriber((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;

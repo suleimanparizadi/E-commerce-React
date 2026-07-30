@@ -15,12 +15,12 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import ProfilePage from '@/pages/ProfilePage';
 import AssistantPage from '@/pages/AssistantPage';
-import AssistantPage from '@/pages/TestConnection';
+import TestConnection from '@/pages/TestConnection';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5,
       retry: 1,
     },
   },
@@ -31,12 +31,14 @@ function PrivateRoute({ children }) {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 
-export default function App() {
+export default function AppRoutes() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Route path="/test" element={<TestConnection />} />
         <Routes>
+          {/* Test route */}
+          <Route path="/test" element={<TestConnection />} />
+
           {/* Auth pages - no sidebar */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
