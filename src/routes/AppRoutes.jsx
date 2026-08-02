@@ -1,20 +1,20 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAuthStore } from '@/stores/authStore';
-import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import { useAuthStore } from '../stores/authStore';
+import { SidebarLayout } from '../components/layout/SidebarLayout';
 
 // Pages
-import HomePage from './../pages/HomePage';
-import ProductsPage from './../pages/ProductsPage';
-import ProductDetailPage from './../pages/ProductDetailPage';
-import CartPage from './../pages/CartPage';
-import CheckoutPage from './../pages/CheckoutPage';
-import OrdersPage from './../pages/OrdersPage';
-import OrderDetailPage from './../pages/OrderDetailPage';
-import LoginPage from './../pages/LoginPage';
-import RegisterPage from './../pages/RegisterPage';
-import ProfilePage from './../pages/ProfilePage';
-import AssistantPage from './../pages/AssistantPage';
+import HomePage from '../pages/HomePage';
+import ProductsPage from '../pages/ProductsPage';
+import ProductDetailPage from '../pages/ProductDetailPage';
+import CartPage from '../pages/CartPage';
+import CheckoutPage from '../pages/CheckoutPage';
+import OrdersPage from '../pages/OrdersPage';
+import OrderDetailPage from '../pages/OrderDetailPage';
+import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
+import ProfilePage from '../pages/ProfilePage';
+import AssistantPage from '../pages/AssistantPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,9 +35,6 @@ export default function AppRoutes() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          {/* Test route */}
-          <Route path="/test" element={<TestConnection />} />
-
           {/* Auth pages - no sidebar */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { reviewsApi } from '@/api/reviews';
+import { reviewsApi } from '../api/reviews';
 
 export function useReviews(productSlug) {
   const queryClient = useQueryClient();

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronDown, Filter, X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 
 const BRANDS = ['ASUS', 'Dell', 'HP', 'Lenovo', 'Apple', 'MSI'];
 const RAM_OPTIONS = [4, 8, 16, 32, 64];
@@ -14,12 +14,12 @@ function FilterSection({ title, children, defaultOpen = true }) {
     <div className="border-b border-gray-100 last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-3 text-sm font-medium"
+        className="w-full flex items-center justify-between py-4 text-base text-amado-dark uppercase"
       >
         {title}
         <ChevronDown
           size={16}
-          className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
       {isOpen && <div className="pb-4">{children}</div>}
@@ -63,16 +63,13 @@ export function ProductFilters() {
   const hasFilters = searchParams.toString().length > 0;
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-gray-100">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold flex items-center gap-2">
-          <Filter size={18} />
-          فیلترها
-        </h3>
+    <div className="bg-amado-bg p-10">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-base uppercase text-amado-dark font-normal">فیلترها</h3>
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="text-sm text-red-500 hover:text-red-600 flex items-center gap-1"
+            className="text-sm text-amado-primary hover:text-amado-dark transition-colors flex items-center gap-1"
           >
             <X size={14} />
             پاک کردن
@@ -82,16 +79,18 @@ export function ProductFilters() {
 
       {/* Brand */}
       <FilterSection title="برند">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {BRANDS.map((brand) => (
-            <label key={brand} className="flex items-center gap-2 cursor-pointer">
+            <label key={brand} className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={isActive('brand', brand)}
                 onChange={() => updateFilter('brand', brand)}
-                className="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                className="rounded-none border-gray-300 text-amado-primary focus:ring-amado-primary w-4 h-4"
               />
-              <span className="text-sm text-gray-700">{brand}</span>
+              <span className="text-base text-gray-500 group-hover:text-amado-primary transition-colors">
+                {brand}
+              </span>
             </label>
           ))}
         </div>
@@ -99,26 +98,26 @@ export function ProductFilters() {
 
       {/* Price */}
       <FilterSection title="قیمت">
-        <div className="space-y-3">
-          <div className="flex gap-2">
+        <div className="space-y-4">
+          <div className="flex gap-3">
             <input
               type="number"
               placeholder="از"
               value={priceRange.min}
               onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+              className="w-full px-4 py-3 bg-white border-none text-sm text-gray-600 focus:outline-none"
             />
             <input
               type="number"
               placeholder="تا"
               value={priceRange.max}
               onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+              className="w-full px-4 py-3 bg-white border-none text-sm text-gray-600 focus:outline-none"
             />
           </div>
           <button
             onClick={applyPriceFilter}
-            className="w-full bg-gray-900 text-white py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors"
+            className="w-full amado-btn text-base"
           >
             اعمال
           </button>
@@ -132,10 +131,10 @@ export function ProductFilters() {
             <button
               key={ram}
               onClick={() => updateFilter('ram', String(ram))}
-              className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+              className={`px-4 py-2 text-sm transition-all duration-500 ${
                 isActive('ram', String(ram))
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'border-gray-200 text-gray-700 hover:border-gray-900'
+                  ? 'bg-amado-primary text-white'
+                  : 'bg-white text-gray-500 hover:text-amado-primary'
               }`}
             >
               {ram}GB
@@ -151,10 +150,10 @@ export function ProductFilters() {
             <button
               key={storage}
               onClick={() => updateFilter('storage', String(storage))}
-              className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+              className={`px-4 py-2 text-sm transition-all duration-500 ${
                 isActive('storage', String(storage))
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'border-gray-200 text-gray-700 hover:border-gray-900'
+                  ? 'bg-amado-primary text-white'
+                  : 'bg-white text-gray-500 hover:text-amado-primary'
               }`}
             >
               {storage >= 1024 ? `${storage / 1024}TB` : `${storage}GB`}
@@ -165,16 +164,18 @@ export function ProductFilters() {
 
       {/* CPU */}
       <FilterSection title="پردازنده">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {CPU_MANUFACTURERS.map((cpu) => (
-            <label key={cpu} className="flex items-center gap-2 cursor-pointer">
+            <label key={cpu} className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={isActive('cpu_manufacturer', cpu)}
                 onChange={() => updateFilter('cpu_manufacturer', cpu)}
-                className="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                className="rounded-none border-gray-300 text-amado-primary focus:ring-amado-primary w-4 h-4"
               />
-              <span className="text-sm text-gray-700">{cpu}</span>
+              <span className="text-base text-gray-500 group-hover:text-amado-primary transition-colors">
+                {cpu}
+              </span>
             </label>
           ))}
         </div>
@@ -182,14 +183,16 @@ export function ProductFilters() {
 
       {/* Touch Screen */}
       <FilterSection title="صفحه نمایش">
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
             checked={isActive('touch_screen', 'true')}
             onChange={() => updateFilter('touch_screen', 'true')}
-            className="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+            className="rounded-none border-gray-300 text-amado-primary focus:ring-amado-primary w-4 h-4"
           />
-          <span className="text-sm text-gray-700">لمسی</span>
+          <span className="text-base text-gray-500 group-hover:text-amado-primary transition-colors">
+            لمسی
+          </span>
         </label>
       </FilterSection>
     </div>

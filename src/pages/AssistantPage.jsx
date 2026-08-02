@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAssistant } from '@/hooks/useAssistant';
+import { useAssistant } from '../hooks/useAssistant';
 import { Send, User, Bot, Loader2, Sparkles } from 'lucide-react';
 
 export default function AssistantPage() {
@@ -28,10 +28,8 @@ export default function AssistantPage() {
     const userMessage = input.trim();
     setInput('');
 
-    // Add user message immediately
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
 
-    // Send to API
     chat.mutate(
       { user_message: userMessage },
       {
@@ -55,14 +53,14 @@ export default function AssistantPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-40px)]">
-      {/* Header */}
-      <div className="bg-white border border-gray-100 rounded-xl p-4 mb-4 flex items-center gap-3">
-        <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
-          <Sparkles size={20} className="text-white" />
+    <div className="flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-40px)] px-4 lg:px-0">
+      {/* Header - Amado Style */}
+      <div className="bg-white border border-gray-100 p-6 mb-4 flex items-center gap-4">
+        <div className="w-12 h-12 bg-amado-primary flex items-center justify-center">
+          <Sparkles size={24} className="text-white" />
         </div>
         <div>
-          <h1 className="font-bold text-gray-900">دستیار هوشمند</h1>
+          <h1 className="text-lg text-amado-dark font-normal uppercase">دستیار هوشمند</h1>
           <p className="text-xs text-gray-500">پاسخگوی سوالات شما درباره لپ‌تاپ</p>
         </div>
         {chat.isPending && (
@@ -73,34 +71,32 @@ export default function AssistantPage() {
         )}
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto bg-white border border-gray-100 rounded-xl p-4 mb-4 space-y-4">
+      {/* Messages - Amado Style */}
+      <div className="flex-1 overflow-y-auto bg-white border border-gray-100 p-6 mb-4 space-y-6">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`flex gap-3 ${
-              msg.role === 'user' ? 'flex-row-reverse' : ''
-            }`}
+            className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
           >
             {/* Avatar */}
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                msg.role === 'user' ? 'bg-gray-200' : 'bg-gray-900'
+              className={`w-10 h-10 flex items-center justify-center shrink-0 ${
+                msg.role === 'user' ? 'bg-amado-bg' : 'bg-amado-primary'
               }`}
             >
               {msg.role === 'user' ? (
-                <User size={16} className="text-gray-600" />
+                <User size={18} className="text-amado-dark" />
               ) : (
-                <Bot size={16} className="text-white" />
+                <Bot size={18} className="text-white" />
               )}
             </div>
 
             {/* Message bubble */}
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+              className={`max-w-[80%] p-6 text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-gray-900 text-white rounded-tr-sm'
-                  : 'bg-gray-100 text-gray-800 rounded-tl-sm'
+                  ? 'bg-amado-dark text-white'
+                  : 'bg-amado-bg text-amado-dark'
               }`}
             >
               {msg.content}
@@ -110,23 +106,23 @@ export default function AssistantPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Input - Amado Style */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-gray-100 rounded-xl p-4 flex gap-3"
+        className="bg-white border border-gray-100 p-4 flex gap-4"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="پیام خود را بنویسید..."
-          className="flex-1 px-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="flex-1 px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
           disabled={chat.isPending}
         />
         <button
           type="submit"
           disabled={!input.trim() || chat.isPending}
-          className="w-12 h-12 bg-gray-900 text-white rounded-lg flex items-center justify-center hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-14 h-14 bg-amado-primary text-white flex items-center justify-center hover:bg-amado-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {chat.isPending ? (
             <Loader2 size={20} className="animate-spin" />

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useOrders } from '@/hooks/useOrders';
-import { useCart } from '@/hooks/useCart';
+import { useOrders } from '../hooks/useOrders';
+import { useCart } from '../hooks/useCart';
 import { ArrowRight, Loader2, MapPin, Building, Hash } from 'lucide-react';
 
 export default function CheckoutPage() {
@@ -50,10 +50,10 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-xl font-bold text-gray-900 mb-2">سبد خرید شما خالی است</h2>
+        <h2 className="text-xl font-bold text-amado-dark mb-2">سبد خرید شما خالی است</h2>
         <button
           onClick={() => navigate('/products')}
-          className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors mt-4"
+          className="inline-flex items-center gap-2 amado-btn text-base mt-4"
         >
           <ArrowRight size={18} />
           بازگشت به فروشگاه
@@ -63,21 +63,22 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">تکمیل خرید</h1>
+    <div className="px-4 lg:px-0">
+      <div className="w-[80px] h-[3px] bg-amado-primary mb-4" />
+      <h1 className="text-3xl text-amado-dark font-normal mb-8">تکمیل خرید</h1>
 
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Form */}
         <div className="flex-1">
-          <form onSubmit={handleSubmit} className="bg-white border border-gray-100 rounded-xl p-6">
-            <h2 className="font-bold text-lg mb-6 flex items-center gap-2">
+          <form onSubmit={handleSubmit} className="bg-white border border-gray-100 p-8">
+            <h2 className="text-lg text-amado-dark font-normal mb-6 flex items-center gap-2 uppercase">
               <MapPin size={20} />
               آدرس تحویل
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm text-gray-500 uppercase mb-2">
                   آدرس کامل
                 </label>
                 <textarea
@@ -85,8 +86,8 @@ export default function CheckoutPage() {
                   value={formData.shipping_address}
                   onChange={handleChange}
                   rows={3}
-                  className={`w-full px-4 py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-                    errors.shipping_address ? 'border-red-500' : 'border-gray-200'
+                  className={`w-full px-4 py-3 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary ${
+                    errors.shipping_address ? 'ring-2 ring-red-500' : ''
                   }`}
                   placeholder="خیابان، کوچه، پلاک، واحد..."
                 />
@@ -97,7 +98,7 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                  <label className="block text-sm text-gray-500 uppercase mb-2 flex items-center gap-1">
                     <Building size={14} />
                     شهر
                   </label>
@@ -106,8 +107,8 @@ export default function CheckoutPage() {
                     name="shipping_city"
                     value={formData.shipping_city}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-                      errors.shipping_city ? 'border-red-500' : 'border-gray-200'
+                    className={`w-full px-4 py-3 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary ${
+                      errors.shipping_city ? 'ring-2 ring-red-500' : ''
                     }`}
                     placeholder="مثلاً تهران"
                   />
@@ -117,7 +118,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                  <label className="block text-sm text-gray-500 uppercase mb-2 flex items-center gap-1">
                     <Hash size={14} />
                     کد پستی
                   </label>
@@ -126,8 +127,8 @@ export default function CheckoutPage() {
                     name="shipping_postal_code"
                     value={formData.shipping_postal_code}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-                      errors.shipping_postal_code ? 'border-red-500' : 'border-gray-200'
+                    className={`w-full px-4 py-3 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary ${
+                      errors.shipping_postal_code ? 'ring-2 ring-red-500' : ''
                     }`}
                     placeholder="1234567890"
                   />
@@ -141,7 +142,7 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={checkout.isPending}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 mt-6 flex items-center justify-center gap-2"
+              className="w-full amado-btn text-base mt-6 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {checkout.isPending ? (
                 <>
@@ -157,19 +158,19 @@ export default function CheckoutPage() {
 
         {/* Order summary */}
         <div className="w-full lg:w-80 shrink-0">
-          <div className="bg-white border border-gray-100 rounded-xl p-6 sticky top-6">
-            <h2 className="font-bold text-lg mb-4">خلاصه سفارش</h2>
+          <div className="bg-white border border-gray-100 p-8 sticky top-6">
+            <h2 className="text-lg text-amado-dark font-normal mb-6 uppercase">خلاصه سفارش</h2>
 
-            <div className="space-y-3 mb-4">
+            <div className="space-y-4 mb-6">
               {items.map((item) => (
-                <div key={item.id} className="flex gap-3">
+                <div key={item.id} className="flex gap-4">
                   <img
                     src={item.product.thumbnail}
                     alt={item.product.name}
-                    className="w-16 h-16 object-cover rounded-lg bg-gray-100 shrink-0"
+                    className="w-16 h-16 object-cover bg-gray-50 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{item.product.name}</p>
+                    <p className="text-sm font-medium text-amado-dark truncate">{item.product.name}</p>
                     <p className="text-xs text-gray-500">
                       {item.quantity} × {new Intl.NumberFormat('fa-IR').format(item.product.price)}
                     </p>
@@ -178,7 +179,9 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            <div className="border-t border-gray-100 pt-4 space-y-2">
+            <div className="w-full h-[2px] bg-gray-100 mb-6" />
+
+            <div className="space-y-2 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">مجموع</span>
                 <span>{new Intl.NumberFormat('fa-IR').format(total)} تومان</span>
@@ -189,11 +192,11 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="border-t border-gray-100 pt-4 mt-4">
-              <div className="flex justify-between font-bold text-lg">
-                <span>قابل پرداخت</span>
-                <span>{new Intl.NumberFormat('fa-IR').format(total)} تومان</span>
-              </div>
+            <div className="w-full h-[2px] bg-gray-100 mb-6" />
+
+            <div className="flex justify-between font-bold text-lg">
+              <span>قابل پرداخت</span>
+              <span className="text-amado-primary">{new Intl.NumberFormat('fa-IR').format(total)} تومان</span>
             </div>
           </div>
         </div>

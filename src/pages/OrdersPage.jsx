@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useOrders } from '@/hooks/useOrders';
+import { useOrders } from '../hooks/useOrders';
 import { Package, ArrowRight, Loader2, Calendar, MapPin } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -24,7 +24,7 @@ export default function OrdersPage() {
   if (orders.isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 size={48} className="animate-spin text-gray-400" />
+        <Loader2 size={48} className="animate-spin text-amado-primary" />
       </div>
     );
   }
@@ -33,11 +33,11 @@ export default function OrdersPage() {
     return (
       <div className="text-center py-20">
         <Package size={64} className="mx-auto text-gray-300 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">سفارشی ثبت نشده</h2>
+        <h2 className="text-xl font-bold text-amado-dark mb-2">سفارشی ثبت نشده</h2>
         <p className="text-gray-500 mb-6">اولین سفارش خود را ثبت کنید</p>
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+          className="inline-flex items-center gap-2 amado-btn text-base"
         >
           <ArrowRight size={18} />
           بازگشت به فروشگاه
@@ -47,23 +47,24 @@ export default function OrdersPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">سفارشات من</h1>
+    <div className="px-4 lg:px-0">
+      <div className="w-[80px] h-[3px] bg-amado-primary mb-4" />
+      <h1 className="text-3xl text-amado-dark font-normal mb-8">سفارشات من</h1>
 
-      <div className="space-y-4">
+      <div className="space-y-0">
         {orders.data.map((order) => (
           <Link
             key={order.id}
             to={`/orders/${order.id}`}
-            className="block bg-white border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow"
+            className="block bg-white border border-gray-100 p-8 hover:shadow-md transition-shadow"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Package size={20} className="text-gray-600" />
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-amado-bg flex items-center justify-center">
+                  <Package size={24} className="text-amado-dark" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">سفارش #{order.id}</p>
+                  <p className="font-bold text-amado-dark">سفارش #{order.id}</p>
                   <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                     <Calendar size={14} />
                     {new Date(order.created_at).toLocaleDateString('fa-IR')}
@@ -72,10 +73,10 @@ export default function OrdersPage() {
               </div>
 
               <div className="flex items-center gap-4">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800'}`}>
+                <span className={`px-4 py-2 text-sm font-normal uppercase ${STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800'}`}>
                   {STATUS_LABELS[order.status] || order.status}
                 </span>
-                <span className="font-bold text-lg">
+                <span className="text-xl text-amado-primary font-normal">
                   {new Intl.NumberFormat('fa-IR').format(order.total_amount)} تومان
                 </span>
               </div>
@@ -92,11 +93,11 @@ export default function OrdersPage() {
                   key={idx}
                   src={item.product.thumbnail}
                   alt={item.product.name}
-                  className="w-12 h-12 object-cover rounded-lg bg-gray-100"
+                  className="w-14 h-14 object-cover bg-gray-50"
                 />
               ))}
               {order.items.length > 3 && (
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
+                <div className="w-14 h-14 bg-amado-bg flex items-center justify-center text-sm text-gray-500">
                   +{order.items.length - 3}
                 </div>
               )}

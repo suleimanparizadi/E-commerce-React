@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { Eye, EyeOff, ArrowRight, Loader2, Smartphone, Lock, User, Mail, Calendar, Check } from 'lucide-react';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { registerInitiate, register } = useAuth();
-  const [step, setStep] = useState('phone'); // 'phone' | 'otp' | 'details'
+  const [step, setStep] = useState('phone');
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [otpCode, setOtpCode] = useState('');
@@ -57,11 +57,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+    <div className="min-h-screen flex items-center justify-center bg-amado-bg px-4">
+      <div className="w-full max-w-md bg-white p-12">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">ثبت نام</h1>
+        <div className="text-center mb-10">
+          <h1 className="text-2xl text-amado-dark font-normal mb-2 uppercase">ثبت نام</h1>
           <p className="text-gray-500 text-sm">
             {step === 'phone' && 'شماره موبایل خود را وارد کنید'}
             {step === 'otp' && 'کد تأیید را وارد کنید'}
@@ -71,19 +71,19 @@ export default function RegisterPage() {
 
         {/* Step 1: Phone */}
         {step === 'phone' && (
-          <form onSubmit={handleSendOTP} className="space-y-4">
+          <form onSubmit={handleSendOTP} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm text-gray-500 uppercase mb-2">
                 شماره موبایل
               </label>
               <div className="relative">
-                <Smartphone size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Smartphone size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                  className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
                   required
                 />
               </div>
@@ -92,7 +92,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={registerInitiate.isPending}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full amado-btn text-base flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {registerInitiate.isPending ? (
                 <>
@@ -108,15 +108,15 @@ export default function RegisterPage() {
 
         {/* Step 2: OTP */}
         {step === 'otp' && (
-          <form onSubmit={handleVerifyOTP} className="space-y-4">
+          <form onSubmit={handleVerifyOTP} className="space-y-6">
             <div className="text-center mb-4">
               <p className="text-sm text-gray-500">
-                کد تأیید به شماره <span className="font-medium text-gray-900">{phone}</span> ارسال شد
+                کد تأیید به شماره <span className="font-medium text-amado-dark">{phone}</span> ارسال شد
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm text-gray-500 uppercase mb-2">
                 کد تأیید
               </label>
               <input
@@ -125,14 +125,14 @@ export default function RegisterPage() {
                 onChange={(e) => setOtpCode(e.target.value)}
                 placeholder="۱۲۳۴۵۶"
                 maxLength={6}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-center text-2xl tracking-widest"
+                className="w-full px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary text-center text-2xl tracking-widest"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              className="w-full amado-btn text-base"
             >
               ادامه
             </button>
@@ -140,7 +140,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => setStep('phone')}
-              className="w-full text-sm text-gray-500 hover:text-gray-900 py-2"
+              className="w-full text-sm text-gray-500 hover:text-amado-dark py-2"
             >
               ارسال مجدد / تغییر شماره
             </button>
@@ -149,28 +149,28 @@ export default function RegisterPage() {
 
         {/* Step 3: Details */}
         {step === 'details' && (
-          <form onSubmit={handleRegister} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm text-gray-500 uppercase mb-2">
                   نام
                 </label>
                 <div className="relative">
-                  <User size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <User size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleChange}
                     placeholder="علی"
-                    className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm text-gray-500 uppercase mb-2">
                   نام خانوادگی
                 </label>
                 <input
@@ -179,48 +179,48 @@ export default function RegisterPage() {
                   value={formData.last_name}
                   onChange={handleChange}
                   placeholder="احمدی"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  className="w-full px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm text-gray-500 uppercase mb-2">
                 ایمیل (اختیاری)
               </label>
               <div className="relative">
-                <Mail size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Mail size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="example@email.com"
-                  className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm text-gray-500 uppercase mb-2">
                 رمز عبور
               </label>
               <div className="relative">
-                <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Lock size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full pr-10 pl-10 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  className="w-full pr-12 pl-12 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amado-dark"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -228,17 +228,17 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm text-gray-500 uppercase mb-2">
                 تاریخ تولد (اختیاری)
               </label>
               <div className="relative">
-                <Calendar size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Calendar size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="date"
                   name="date_of_birth"
                   value={formData.date_of_birth}
                   onChange={handleChange}
-                  className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
                 />
               </div>
             </div>
@@ -249,19 +249,18 @@ export default function RegisterPage() {
                 name="terms_accepted"
                 checked={formData.terms_accepted}
                 onChange={handleChange}
-                className="mt-1 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                className="mt-1 rounded-none border-gray-300 text-amado-primary focus:ring-amado-primary w-4 h-4"
                 required
               />
               <span className="text-sm text-gray-600">
-                <Check size={14} className="inline ml-1" />
-                با <a href="#" className="underline">قوانین و مقررات</a> موافقم
+                با <a href="#" className="underline hover:text-amado-primary">قوانین و مقررات</a> موافقم
               </span>
             </label>
 
             <button
               type="submit"
               disabled={register.isPending}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full amado-btn text-base flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {register.isPending ? (
                 <>
@@ -276,10 +275,10 @@ export default function RegisterPage() {
         )}
 
         {/* Login link */}
-        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+        <div className="mt-8 pt-8 border-t border-gray-100 text-center">
           <p className="text-sm text-gray-500">
             قبلاً ثبت نام کرده‌اید؟{' '}
-            <Link to="/login" className="text-gray-900 font-medium hover:underline">
+            <Link to="/login" className="text-amado-dark font-medium hover:text-amado-primary transition-colors">
               ورود
             </Link>
           </p>
@@ -289,7 +288,7 @@ export default function RegisterPage() {
         <div className="mt-4 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600"
+            className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-amado-dark transition-colors"
           >
             <ArrowRight size={14} />
             بازگشت به فروشگاه

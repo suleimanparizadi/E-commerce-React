@@ -1,85 +1,98 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart } from 'lucide-react';
-import { useCart } from '@/hooks/useCart';
+import { useCart } from '../../../hooks/useCart';
 
 export function ProductCard({ product }) {
   const { addItem } = useCart();
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     addItem.mutate({ product_slug: product.slug, quantity: 1 });
   };
 
   return (
-    <div className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+    <div
+      className="group relative bg-white overflow-hidden product-card-hover"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-50">
         <img
           src={product.thumbnail || '/placeholder-product.jpg'}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover transition-transform duration-500"
         />
         
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {product.stock === 0 && (
-            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
-              ناموجود
-            </span>
-          )}
-          {product.average_rating > 0 && (
-            <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded">
-              ★ {product.average_rating.toFixed(1)}
-            </span>
-          )}
-        </div>
-
-        {/* Quick actions */}
-        <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {/* Hover overlay with actions */}
+        <div 
+          className={`
+            absolute inset-0 bg-black/40 flex items-center justify-center gap-3
+            transition-all duration-500
+            ${isHovered ? 'opacity-100' : 'opacity-0'}
+          `}
+        >
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0 || addItem.isPending}
-            className="flex-1 bg-gray-900 text-white py-2 text-sm font-medium rounded-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-amado-primary hover:text-white transition-colors disabled:opacity-50"
           >
-            <ShoppingCart size={16} />
-            افزودن به سبد
+            <ShoppingCart size={18} />
           </button>
-          <button className="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+          <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-amado-primary hover:text-white transition-colors">
             <Heart size={18} />
           </button>
         </div>
+
+        {/* Stock badge */}
+        {product.stock === 0 && (
+          <span className="absolute top-4 left-4 bg-red-500 text-white text-xs px-3 py-1 uppercase">
+            ناموجود
+          </span>
+        )}
       </div>
 
-      {/* Content */}
-      <div className="p-4">
-        <p className="text-xs text-gray-500 mb-1">{product.brand}</p>
+      {/* Content - Amado Style */}
+      <div className="p-6">
+        {/* Price line */}
+        <div className="w-[80px] h-[3px] bg-amado-primary mb-4" />
+        
+        {/* Price */}
+        <p className="text-2xl text-amado-primary font-normal mb-2 leading-none">
+          {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
+        </p>
+        
+        {/* Name */}
         <Link to={`/products/${product.slug}`}>
-          <h3 className="font-medium text-gray-900 mb-2 hover:text-gray-700 transition-colors line-clamp-2">
+          <h3 className="text-base text-amado-dark hover:text-amado-primary transition-colors duration-500 mb-1">
             {product.name}
           </h3>
         </Link>
         
+        {/* Brand */}
+        <p className="text-sm text-gray-500">{product.brand}</p>
+        
         {/* Specs */}
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-2 mt-3">
           {product.ram && (
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+            <span className="text-xs bg-amado-bg px-2 py-1 text-gray-600">
               {product.ram}GB RAM
             </span>
           )}
           {product.storage && (
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+            <span className="text-xs bg-amado-bg px-2 py-1 text-gray-600">
               {product.storage >= 1024 ? `${product.storage / 1024}TB` : `${product.storage}GB`}
             </span>
           )}
           {product.cpu?.manufacturer && (
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+            <span className="text-xs bg-amado-bg px-2 py-1 text-gray-600">
               {product.cpu.manufacturer}
             </span>
           )}
         </div>
-
-        <p className="text-lg font-bold text-gray-900">
-          {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
-        </p>
       </div>
     </div>
   );

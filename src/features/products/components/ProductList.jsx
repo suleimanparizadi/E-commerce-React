@@ -5,12 +5,15 @@ export function ProductList({ products, isLoading }) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 size={48} className="animate-spin text-gray-400" />
+        <Loader2 size={48} className="animate-spin text-amado-primary" />
       </div>
     );
   }
 
-  if (!products || products.length === 0) {
+  // ✅ Safe check: ensure products is an array
+  const productsArray = Array.isArray(products) ? products : [];
+
+  if (productsArray.length === 0) {
     return (
       <div className="text-center py-20 text-gray-500">
         <p className="text-lg">محصولی یافت نشد</p>
@@ -20,8 +23,8 @@ export function ProductList({ products, isLoading }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-      {products.map((product) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
+      {productsArray.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
