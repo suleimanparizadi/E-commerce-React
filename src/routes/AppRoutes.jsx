@@ -4,18 +4,17 @@ import { useAuthStore } from '@/stores/authStore';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
 // Pages
-import HomePage from '@/pages/HomePage';
-import ProductsPage from '@/pages/ProductsPage';
-import ProductDetailPage from '@/pages/ProductDetailPage';
-import CartPage from '@/pages/CartPage';
-import CheckoutPage from '@/pages/CheckoutPage';
-import OrdersPage from '@/pages/OrdersPage';
-import OrderDetailPage from '@/pages/OrderDetailPage';
-import LoginPage from '@/pages/LoginPage';
-import RegisterPage from '@/pages/RegisterPage';
-import ProfilePage from '@/pages/ProfilePage';
-import AssistantPage from '@/pages/AssistantPage';
-import TestConnection from '@/pages/TestConnection';
+import HomePage from './../pages/HomePage';
+import ProductsPage from './../pages/ProductsPage';
+import ProductDetailPage from './../pages/ProductDetailPage';
+import CartPage from './../pages/CartPage';
+import CheckoutPage from './../pages/CheckoutPage';
+import OrdersPage from './../pages/OrdersPage';
+import OrderDetailPage from './../pages/OrderDetailPage';
+import LoginPage from './../pages/LoginPage';
+import RegisterPage from './../pages/RegisterPage';
+import ProfilePage from './../pages/ProfilePage';
+import AssistantPage from './../pages/AssistantPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
