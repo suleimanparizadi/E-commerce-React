@@ -28,26 +28,6 @@ export function useAuth() {
     },
   });
 
-  // Send OTP
-  const sendOTP = useMutation({
-    mutationFn: (data) => authApi.sendOTP(data).then((res) => res.data),
-  });
-
-  // Verify OTP
-  const verifyOTP = useMutation({
-    mutationFn: (data) => authApi.verifyOTP(data).then((res) => res.data),
-    onSuccess: async (data) => {
-      const tokens = data.tokens || data;
-      setTokens(tokens.access, tokens.refresh);
-      
-      // 🛒 Sync guest cart to API after OTP login
-      await syncGuestCartToApi();
-      
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-    },
-  });
-
   // Register - send OTP
   const registerInitiate = useMutation({
     mutationFn: (data) => authApi.registerInitiate(data).then((res) => res.data),
@@ -124,10 +104,8 @@ export function useAuth() {
 
   return {
     login,
-    sendOTP,
-    verifyOTP,
-    register,
     registerInitiate,
+    register,
     logout: logoutMutation,
     profile,
     changePassword,
