@@ -6,8 +6,7 @@ export function useProducts() {
     queryKey: ['products'],
     queryFn: async () => {
       const response = await productsApi.getProducts();
-      // Extract the array from the response
-      const data = response?.data?.data || response?.data || [];
+      const data = response?.data || [];
       return Array.isArray(data) ? data : [];
     },
   });
@@ -18,7 +17,7 @@ export function useProduct(slug) {
     queryKey: ['product', slug],
     queryFn: async () => {
       const response = await productsApi.getProduct(slug);
-      return response?.data?.data || response?.data || null;
+      return response?.data || null;
     },
     enabled: !!slug,
   });
@@ -29,9 +28,10 @@ export function useSearchProducts(filters) {
     queryKey: ['products', 'search', filters],
     queryFn: async () => {
       const response = await productsApi.searchProducts(filters);
-      const data = response?.data?.data || response?.data || [];
+      const data = response?.data || [];
       return Array.isArray(data) ? data : [];
     },
-    enabled: Object.keys(filters).length > 0 && filters.search !== undefined,
+    // Only run if there's a search query OR at least one filter
+    enabled: !!(filters.q || filters.search || filters.brand || filters.category_slug || filters.ram || filters.storage || filters.gpu || filters.cpu_manufacturer || filters.min_price || filters.max_price || filters.in_stock_only !== undefined || filters.touch_screen !== undefined),
   });
 }

@@ -30,27 +30,38 @@ export function useAuth() {
   });
 
   // Login with OTP - verify OTP
+  // Verify OTP
   const verifyOTP = useMutation({
     mutationFn: (data) => {
-      // DEBUG: Log what LoginPage is sending
-      console.log('🔍 OTP verify payload:', data);
-      
-      // Fix field name mismatch: otp_code → code
-      const fixedData = {
+      // Fix field name mismatch from LoginPage
+      const payload = {
         phone_number: data.phone_number || data.phone,
         code: data.code || data.otp_code,
       };
-      
-      console.log('🔧 Fixed payload:', fixedData);
-      return authApi.verifyOTP(fixedData).then((res) => res.data);
+      return authApi.verifyOTP(payload).then((res) => res.data);
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const tokens = data.tokens || data;
       setTokens(tokens.access, tokens.refresh);
+      
+      // 🛒 Sync guest cart to API after OTP login
+      const guestItems = useCartStore.getState().items;
+      if (guestItems.length > 0) {
+        for (const item of guestItems) {
+          try {
+            await cartApi.addItem({
+              product_slug: item.product?.slug,
+              quantity: item.quantity,
+            });
+          } catch (e) {
+            console.error('Cart sync error:', e);
+          }
+        }
+        useCartStore.getState().clearCart();
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-    },
-    onError: (error) => {
-      console.error('❌ OTP verify full error:', error.response?.data);
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 
