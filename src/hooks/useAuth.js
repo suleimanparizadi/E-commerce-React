@@ -16,15 +16,41 @@ export function useAuth() {
   const login = useMutation({
     mutationFn: (credentials) => authApi.login(credentials).then((res) => res.data),
     onSuccess: async (data) => {
-      // Handle both response shapes: {tokens: {access, refresh}} or {access, refresh}
       const tokens = data.tokens || data;
       setTokens(tokens.access, tokens.refresh);
-      
-      // 🛒 Sync guest cart to API after login
       await syncGuestCartToApi();
-      
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+
+  // Login with OTP - send OTP
+  const sendOTP = useMutation({
+    mutationFn: (phone_number) => authApi.sendOTP(phone_number).then((res) => res.data),
+  });
+
+  // Login with OTP - verify OTP
+  const verifyOTP = useMutation({
+    mutationFn: (data) => {
+      // DEBUG: Log what LoginPage is sending
+      console.log('🔍 OTP verify payload:', data);
+      
+      // Fix field name mismatch: otp_code → code
+      const fixedData = {
+        phone_number: data.phone_number || data.phone,
+        code: data.code || data.otp_code,
+      };
+      
+      console.log('🔧 Fixed payload:', fixedData);
+      return authApi.verifyOTP(fixedData).then((res) => res.data);
+    },
+    onSuccess: (data) => {
+      const tokens = data.tokens || data;
+      setTokens(tokens.access, tokens.refresh);
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+    onError: (error) => {
+      console.error('❌ OTP verify full error:', error.response?.data);
     },
   });
 
@@ -39,23 +65,17 @@ export function useAuth() {
     onSuccess: async (data) => {
       const tokens = data.tokens || data;
       setTokens(tokens.access, tokens.refresh);
-      
-      // 🛒 Sync guest cart to API after registration
       await syncGuestCartToApi();
-      
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 
-  // 🛒 Helper: sync guest cart items to authenticated API cart
   async function syncGuestCartToApi() {
     const items = useCartStore.getState().items;
     if (!items || items.length === 0) return;
 
     console.log('🛒 Syncing guest cart to API:', items);
-
-    // Add each item sequentially to respect stock checks
     for (const item of items) {
       try {
         await cartApi.addItem({
@@ -65,11 +85,8 @@ export function useAuth() {
         console.log(`✅ Synced: ${item.product?.name} x${item.quantity}`);
       } catch (error) {
         console.error(`❌ Failed to sync ${item.product?.slug}:`, error.response?.data?.message || error.message);
-        // Continue with other items even if one fails
       }
     }
-
-    // Clear guest cart after sync
     clearGuestCart();
     console.log('🗑️ Guest cart cleared');
   }
@@ -87,11 +104,11 @@ export function useAuth() {
     },
   });
 
-  // Get profile — only when authenticated
+  // Get profile
   const profile = useQuery({
     queryKey: ['profile'],
     queryFn: () => authApi.getProfile().then((res) => res.data),
-    enabled: isAuthenticated, // ← Now reactive!
+    enabled: isAuthenticated,
     onSuccess: (data) => {
       setUser(data);
     },
@@ -104,6 +121,8 @@ export function useAuth() {
 
   return {
     login,
+    sendOTP,
+    verifyOTP,
     registerInitiate,
     register,
     logout: logoutMutation,
