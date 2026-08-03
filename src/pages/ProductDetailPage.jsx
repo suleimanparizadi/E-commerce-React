@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useProduct } from '../hooks/useProducts';
 import { useReviews } from '../hooks/useReviews';
 import { useCart } from '../hooks/useCart';
-import { ArrowRight, Loader2, Star, ShoppingCart, Heart } from 'lucide-react';
+import { ArrowRight, Loader2, Star, ShoppingCart, Heart, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -12,6 +12,7 @@ export default function ProductDetailPage() {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [addStatus, setAddStatus] = useState(null); // 'success' | 'error' | null
 
   if (productLoading) {
     return (
@@ -33,28 +34,60 @@ export default function ProductDetailPage() {
   }
 
   const handleAddToCart = () => {
-    addItem.mutate({ product_slug: product.slug, quantity });
+    setAddStatus(null);
+    
+    addItem.mutate(
+      { 
+        product_slug: product.slug, 
+        quantity,
+        product: product, // Pass full product for guest cart
+      },
+      {
+        onSuccess: () => {
+          setAddStatus('success');
+          setTimeout(() => setAddStatus(null), 3000);
+        },
+        onError: (error) => {
+          console.error('Add to cart failed:', error);
+          setAddStatus('error');
+          setTimeout(() => setAddStatus(null), 3000);
+        },
+      }
+    );
   };
 
   const images = product.images?.length > 0
     ? product.images.map((img) => img.image)
     : [product.thumbnail];
 
-  // Get reviews data safely
   const reviewsList = Array.isArray(reviews.data) ? reviews.data : [];
   const reviewsLoading = reviews.isLoading;
 
   return (
     <div className="px-4 lg:px-0">
-      {/* Breadcrumb - Amado Style */}
+      {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 uppercase">
         <Link to="/products" className="hover:text-amado-primary">فروشگاه</Link>
         <ArrowRight size={14} />
         <span className="text-amado-dark">{product.name}</span>
       </div>
 
+      {/* Feedback toast */}
+      {addStatus === 'success' && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded flex items-center gap-2 text-green-700">
+          <CheckCircle size={18} />
+          <span>محصول با موفقیت به سبد اضافه شد</span>
+        </div>
+      )}
+      {addStatus === 'error' && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded flex items-center gap-2 text-red-700">
+          <AlertCircle size={18} />
+          <span>خطا در افزودن به سبد. لطفاً دوباره تلاش کنید</span>
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row gap-10">
-        {/* Images - Amado Style */}
+        {/* Images */}
         <div className="lg:w-1/2">
           <div className="aspect-square bg-white overflow-hidden mb-4">
             <img
@@ -80,7 +113,7 @@ export default function ProductDetailPage() {
           )}
         </div>
 
-        {/* Info - Amado Style */}
+        {/* Info */}
         <div className="lg:w-1/2">
           <p className="text-sm text-gray-500 uppercase mb-2">{product.brand}</p>
           <h1 className="text-3xl text-amado-dark font-normal mb-4">{product.name}</h1>
@@ -105,7 +138,7 @@ export default function ProductDetailPage() {
             </span>
           </div>
 
-          {/* Price - Amado Style */}
+          {/* Price */}
           <div className="w-[80px] h-[3px] bg-amado-primary mb-4" />
           <p className="text-3xl text-amado-primary font-normal mb-6">
             {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
@@ -140,14 +173,14 @@ export default function ProductDetailPage() {
               </div>
               <div className="flex justify-between border-b border-gray-200 pb-2">
                 <span className="text-gray-500">موجودی</span>
-                <span className={product.stock > 0 ? 'text-green-600' : 'text-red-500'}>
-                  {product.stock > 0 ? `${product.stock} عدد` : 'ناموجود'}
+                <span className={product.is_in_stock ? 'text-green-600' : 'text-red-500'}>
+                  {product.is_in_stock ? 'موجود' : 'ناموجود'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Add to cart - Amado Style */}
+          {/* Add to cart */}
           <div className="flex gap-4 mb-8">
             <div className="flex items-center border border-gray-200">
               <button
@@ -166,11 +199,11 @@ export default function ProductDetailPage() {
             </div>
             <button
               onClick={handleAddToCart}
-              disabled={product.stock === 0 || addItem.isPending}
+              disabled={!product.is_in_stock || addItem.isPending}
               className="flex-1 amado-btn text-base flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <ShoppingCart size={18} />
-              افزودن به سبد
+              {addItem.isPending ? 'در حال افزودن...' : 'افزودن به سبد'}
             </button>
             <button className="w-14 h-14 border border-gray-200 flex items-center justify-center hover:bg-amado-bg transition-colors">
               <Heart size={20} />
@@ -179,7 +212,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Reviews section - Amado Style */}
+      {/* Reviews section */}
       <div className="mt-16">
         <div className="w-[80px] h-[3px] bg-amado-primary mb-6" />
         <h2 className="text-2xl text-amado-dark font-normal mb-8">نظرات مشتریان</h2>
@@ -194,10 +227,10 @@ export default function ProductDetailPage() {
               <div key={review.id} className="bg-white border border-gray-100 p-8">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-amado-bg flex items-center justify-center text-sm font-bold text-amado-dark">
-                    {review.user.first_name[0]}
+                    {review.user?.first_name?.[0] || '?'}
                   </div>
                   <div>
-                    <p className="font-medium text-amado-dark">{review.user.first_name} {review.user.last_name}</p>
+                    <p className="font-medium text-amado-dark">{review.user?.first_name} {review.user?.last_name}</p>
                     <div className="flex mt-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
