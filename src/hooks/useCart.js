@@ -26,6 +26,7 @@ export function useCart() {
 
   // Add item — API for auth, local store for guest
   const addItem = useMutation({
+    
     mutationFn: async (data) => {
       if (isAuthenticated) {
         const res = await cartApi.addItem(data);
@@ -44,6 +45,7 @@ export function useCart() {
       }
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
+    
   });
 
   // Remove item

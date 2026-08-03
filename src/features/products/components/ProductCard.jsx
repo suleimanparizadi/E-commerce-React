@@ -10,7 +10,7 @@ export function ProductCard({ product }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem.mutate({ product_slug: product.slug, quantity: 1 });
+    addItem.mutate({ product_slug: product.slug, quantity: 1, product: product })
   };
 
   return (
@@ -64,7 +64,6 @@ export function ProductCard({ product }) {
         <p className="text-2xl text-amado-primary font-normal mb-2 leading-none">
           {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
         </p>
-        
         {/* Name */}
         <Link to={`/products/${product.slug}`}>
           <h3 className="text-base text-amado-dark hover:text-amado-primary transition-colors duration-500 mb-1">
