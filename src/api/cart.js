@@ -7,3 +7,4 @@ export const cartApi = {
   removeItem: (itemId) => apiClient.delete(`/cart/item/?item_id=${itemId}`),
   clearCart: () => apiClient.post('/cart/clear/'),
 };
+
