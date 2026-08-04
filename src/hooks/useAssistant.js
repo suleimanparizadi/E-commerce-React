@@ -3,7 +3,11 @@ import { assistantApi } from '../api/assistant';
 
 export function useAssistant() {
   const chat = useMutation({
-    mutationFn: (data) => assistantApi.chat(data).then((res) => res.data),
+    mutationFn: async (data) => {
+      const res = await assistantApi.chat(data);
+      // Return raw answer — can be string OR object { message, products }
+      return res?.data?.answer ?? 'پاسخی دریافت نشد.';
+    },
   });
 
   return {
