@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useOrders } from '../hooks/useOrders';
-import { ArrowRight, Package, Calendar, MapPin, Hash, Loader2 } from 'lucide-react';
+import { ArrowRight, Package, Calendar, MapPin, Hash, Loader2, ImageOff } from 'lucide-react';
 
 const STATUS_COLORS = {
   pending: 'bg-amber-100 text-amber-800',
@@ -42,13 +42,18 @@ export default function OrderDetailPage() {
     );
   }
 
+  // Defensive: ensure items is always an array
+  const items = Array.isArray(order.items) ? order.items : [];
+  const status = order.status || 'pending';
+  const totalAmount = order.total_amount || 0;
+
   return (
     <div className="px-4 lg:px-0">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 uppercase">
         <Link to="/orders" className="hover:text-amado-primary">سفارشات</Link>
         <ArrowRight size={14} />
-        <span className="text-amado-dark">سفارش #{order.id}</span>
+        <span className="text-amado-dark">سفارش #{order.id || '—'}</span>
       </div>
 
       <div className="w-[80px] h-[3px] bg-amado-primary mb-4" />
@@ -65,15 +70,18 @@ export default function OrderDetailPage() {
                   <Package size={24} className="text-amado-dark" />
                 </div>
                 <div>
-                  <p className="font-bold text-amado-dark">سفارش #{order.id}</p>
+                  <p className="font-bold text-amado-dark">سفارش #{order.id || '—'}</p>
                   <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                     <Calendar size={14} />
-                    {new Date(order.created_at).toLocaleDateString('fa-IR')}
+                    {order.created_at
+                      ? new Date(order.created_at).toLocaleDateString('fa-IR')
+                      : '—'
+                    }
                   </div>
                 </div>
               </div>
-              <span className={`px-4 py-2 text-sm font-normal uppercase ${STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800'}`}>
-                {STATUS_LABELS[order.status] || order.status}
+              <span className={`px-4 py-2 text-sm font-normal uppercase ${STATUS_COLORS[status] || 'bg-gray-100 text-gray-800'}`}>
+                {STATUS_LABELS[status] || status}
               </span>
             </div>
           </div>
@@ -81,41 +89,61 @@ export default function OrderDetailPage() {
           {/* Items */}
           <div className="bg-white border border-gray-100 p-8">
             <h2 className="text-lg text-amado-dark font-normal mb-6 uppercase">کالاها</h2>
-            <div className="space-y-6">
-              {order.items.map((item, idx) => (
-                <div key={idx} className="flex gap-6 pb-6 border-b border-gray-100 last:border-0 last:pb-0">
-                  <Link to={`/products/${item.product.slug}`} className="shrink-0">
-                    <img
-                      src={item.product.thumbnail}
-                      alt={item.product.name}
-                      className="w-24 h-24 object-cover bg-gray-50"
-                    />
-                  </Link>
-                  <div className="flex-1">
-                    <Link
-                      to={`/products/${item.product.slug}`}
-                      className="text-base text-amado-dark hover:text-amado-primary transition-colors"
-                    >
-                      {item.product.name}
-                    </Link>
-                    <p className="text-sm text-gray-500 mt-1">{item.product.brand}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-sm text-gray-500">
-                        {item.quantity} عدد
-                      </span>
-                      <div className="text-left">
-                        <p className="text-sm text-gray-400 line-through">
-                          {new Intl.NumberFormat('fa-IR').format(item.product.price)} تومان
-                        </p>
-                        <p className="text-xl text-amado-primary font-normal">
-                          {new Intl.NumberFormat('fa-IR').format(item.price_at_purchase)} تومان
-                        </p>
+            {items.length > 0 ? (
+              <div className="space-y-6">
+                {items.map((item, idx) => {
+                  const product = item?.product || {};
+                  const quantity = item?.quantity || 0;
+                  const priceAtPurchase = item?.price_at_purchase || 0;
+                  const originalPrice = product?.price || 0;
+
+                  return (
+                    <div key={idx} className="flex gap-6 pb-6 border-b border-gray-100 last:border-0 last:pb-0">
+                      <Link to={product.slug ? `/products/${product.slug}` : '#'} className="shrink-0">
+                        {product.thumbnail ? (
+                          <img
+                            src={product.thumbnail}
+                            alt={product.name || ''}
+                            className="w-24 h-24 object-cover bg-gray-50"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <div className="w-24 h-24 bg-gray-100 flex items-center justify-center">
+                            <ImageOff size={24} className="text-gray-400" />
+                          </div>
+                        )}
+                      </Link>
+                      <div className="flex-1">
+                        <Link
+                          to={product.slug ? `/products/${product.slug}` : '#'}
+                          className="text-base text-amado-dark hover:text-amado-primary transition-colors"
+                        >
+                          {product.name || 'محصول نامشخص'}
+                        </Link>
+                        <p className="text-sm text-gray-500 mt-1">{product.brand || ''}</p>
+                        <div className="flex items-center justify-between mt-3">
+                          <span className="text-sm text-gray-500">
+                            {quantity} عدد
+                          </span>
+                          <div className="text-left">
+                            {originalPrice > priceAtPurchase && (
+                              <p className="text-sm text-gray-400 line-through">
+                                {new Intl.NumberFormat('fa-IR').format(originalPrice)} تومان
+                              </p>
+                            )}
+                            <p className="text-xl text-amado-primary font-normal">
+                              {new Intl.NumberFormat('fa-IR').format(priceAtPurchase)} تومان
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-gray-500">کالایی در این سفارش وجود ندارد</p>
+            )}
           </div>
 
           {/* Shipping info */}
@@ -129,21 +157,21 @@ export default function OrderDetailPage() {
                 <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-gray-500 uppercase text-xs mb-1">آدرس</p>
-                  <p className="text-amado-dark">{order.shipping_address}</p>
+                  <p className="text-amado-dark">{order.shipping_address || '—'}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
                 <Hash size={16} className="text-gray-400 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-gray-500 uppercase text-xs mb-1">کد پستی</p>
-                  <p className="text-amado-dark">{order.shipping_postal_code}</p>
+                  <p className="text-amado-dark">{order.shipping_postal_code || '—'}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
                 <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-gray-500 uppercase text-xs mb-1">شهر</p>
-                  <p className="text-amado-dark">{order.shipping_city}</p>
+                  <p className="text-amado-dark">{order.shipping_city || '—'}</p>
                 </div>
               </div>
             </div>
@@ -158,13 +186,13 @@ export default function OrderDetailPage() {
             <div className="space-y-3 text-sm mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-500">تعداد کالا</span>
-                <span>{order.items.reduce((sum, i) => sum + i.quantity, 0)} عدد</span>
+                <span>{items.reduce((sum, i) => sum + (i?.quantity || 0), 0)} عدد</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">مجموع</span>
                 <span>
                   {new Intl.NumberFormat('fa-IR').format(
-                    order.items.reduce((sum, i) => sum + i.price_at_purchase * i.quantity, 0)
+                    items.reduce((sum, i) => sum + (i?.price_at_purchase || 0) * (i?.quantity || 0), 0)
                   )} تومان
                 </span>
               </div>
@@ -178,7 +206,9 @@ export default function OrderDetailPage() {
 
             <div className="flex justify-between font-bold text-lg">
               <span>مبلغ پرداخت شده</span>
-              <span className="text-amado-primary">{new Intl.NumberFormat('fa-IR').format(order.total_amount)} تومان</span>
+              <span className="text-amado-primary">
+                {new Intl.NumberFormat('fa-IR').format(totalAmount)} تومان
+              </span>
             </div>
           </div>
         </div>

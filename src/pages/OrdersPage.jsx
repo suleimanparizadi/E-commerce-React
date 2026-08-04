@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useOrders } from '../hooks/useOrders';
-import { Package, ArrowRight, Loader2, Calendar, MapPin } from 'lucide-react';
+import { Package, ArrowRight, Loader2, Calendar, MapPin, ImageOff } from 'lucide-react';
 
 const STATUS_COLORS = {
   pending: 'bg-amber-100 text-amber-800',
@@ -29,7 +29,9 @@ export default function OrdersPage() {
     );
   }
 
-  if (!orders.data || orders.data.length === 0) {
+  const orderList = orders.data || [];
+
+  if (orderList.length === 0) {
     return (
       <div className="text-center py-20">
         <Package size={64} className="mx-auto text-gray-300 mb-4" />
@@ -52,58 +54,81 @@ export default function OrdersPage() {
       <h1 className="text-3xl text-amado-dark font-normal mb-8">سفارشات من</h1>
 
       <div className="space-y-0">
-        {orders.data.map((order) => (
-          <Link
-            key={order.id}
-            to={`/orders/${order.id}`}
-            className="block bg-white border border-gray-100 p-8 hover:shadow-md transition-shadow"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-amado-bg flex items-center justify-center">
-                  <Package size={24} className="text-amado-dark" />
-                </div>
-                <div>
-                  <p className="font-bold text-amado-dark">سفارش #{order.id}</p>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                    <Calendar size={14} />
-                    {new Date(order.created_at).toLocaleDateString('fa-IR')}
+        {orderList.map((order) => {
+          const items = Array.isArray(order.items) ? order.items : [];
+          const status = order.status || 'pending';
+          
+          return (
+            <Link
+              key={order.id}
+              to={`/orders/${order.id}`}
+              className="block bg-white border border-gray-100 p-8 hover:shadow-md transition-shadow"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-amado-bg flex items-center justify-center">
+                    <Package size={24} className="text-amado-dark" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-amado-dark">سفارش #{order.id}</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                      <Calendar size={14} />
+                      {order.created_at 
+                        ? new Date(order.created_at).toLocaleDateString('fa-IR')
+                        : '—'
+                      }
+                    </div>
                   </div>
                 </div>
+
+                <div className="flex items-center gap-4">
+                  <span className={`px-4 py-2 text-sm font-normal uppercase ${STATUS_COLORS[status] || 'bg-gray-100 text-gray-800'}`}>
+                    {STATUS_LABELS[status] || status}
+                  </span>
+                  <span className="text-xl text-amado-primary font-normal">
+                    {order.total_amount 
+                      ? `${new Intl.NumberFormat('fa-IR').format(order.total_amount)} تومان`
+                      : '—'
+                    }
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <span className={`px-4 py-2 text-sm font-normal uppercase ${STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800'}`}>
-                  {STATUS_LABELS[order.status] || order.status}
-                </span>
-                <span className="text-xl text-amado-primary font-normal">
-                  {new Intl.NumberFormat('fa-IR').format(order.total_amount)} تومان
+              <div className="flex items-center gap-2 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                <MapPin size={14} />
+                <span>
+                  {order.shipping_city || '—'} — {order.shipping_address || '—'}
                 </span>
               </div>
-            </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-500 border-t border-gray-100 pt-4">
-              <MapPin size={14} />
-              <span>{order.shipping_city} — {order.shipping_address}</span>
-            </div>
-
-            <div className="flex gap-2 mt-4">
-              {order.items.slice(0, 3).map((item, idx) => (
-                <img
-                  key={idx}
-                  src={item.product.thumbnail}
-                  alt={item.product.name}
-                  className="w-14 h-14 object-cover bg-gray-50"
-                />
-              ))}
-              {order.items.length > 3 && (
-                <div className="w-14 h-14 bg-amado-bg flex items-center justify-center text-sm text-gray-500">
-                  +{order.items.length - 3}
+              {items.length > 0 && (
+                <div className="flex gap-2 mt-4">
+                  {items.slice(0, 3).map((item, idx) => (
+                    <div key={idx} className="w-14 h-14 bg-gray-50 overflow-hidden">
+                      {item.product?.thumbnail ? (
+                        <img
+                          src={item.product.thumbnail}
+                          alt={item.product.name || ''}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageOff size={16} className="text-gray-300" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {items.length > 3 && (
+                    <div className="w-14 h-14 bg-amado-bg flex items-center justify-center text-sm text-gray-500">
+                      +{items.length - 3}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
