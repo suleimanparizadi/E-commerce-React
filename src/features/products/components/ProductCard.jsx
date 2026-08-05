@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../../../hooks/useCart';
 
 export function ProductCard({ product }) {
@@ -10,12 +10,13 @@ export function ProductCard({ product }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem.mutate({ product_slug: product.slug, quantity: 1, product: product })
+    addItem.mutate({ product_slug: product.slug, quantity: 1, product: product });
   };
 
   return (
-    <div
-      className="group relative bg-white overflow-hidden product-card-hover"
+    <Link
+      to={`/products/${product.slug}`}
+      className="group relative bg-white overflow-hidden product-card-hover block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -26,26 +27,15 @@ export function ProductCard({ product }) {
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500"
         />
-        
-        {/* Hover overlay with actions */}
-        <div 
+
+        {/* Grey hover overlay */}
+        <div
           className={`
-            absolute inset-0 bg-black/40 flex items-center justify-center gap-3
+            absolute inset-0 bg-black/40 flex items-center justify-center
             transition-all duration-500
             ${isHovered ? 'opacity-100' : 'opacity-0'}
           `}
-        >
-          <button
-            onClick={handleAddToCart}
-            disabled={product.stock === 0 || addItem.isPending}
-            className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-amado-primary hover:text-white transition-colors disabled:opacity-50"
-          >
-            <ShoppingCart size={18} />
-          </button>
-          <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-amado-primary hover:text-white transition-colors">
-            <Heart size={18} />
-          </button>
-        </div>
+        />
 
         {/* Stock badge */}
         {product.stock === 0 && (
@@ -53,6 +43,22 @@ export function ProductCard({ product }) {
             ناموجود
           </span>
         )}
+
+        {/* Blue cart button - slides up from bottom-right on hover */}
+        <div
+          className={`
+            absolute bottom-4 right-4 transition-all duration-500 ease-out
+            ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+          `}
+        >
+          <button
+            onClick={handleAddToCart}
+            disabled={product.stock === 0 || addItem.isPending}
+            className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-lg"
+          >
+            <ShoppingCart size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Content - Amado Style */}
@@ -60,16 +66,18 @@ export function ProductCard({ product }) {
         {/* Price line */}
         <div className="w-[80px] h-[3px] bg-amado-primary mb-4" />
         
-        {/* Price */}
+        {/* Price - number only, English format */}
         <p className="text-2xl text-amado-primary font-normal mb-2 leading-none">
-          {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
+          {new Intl.NumberFormat('en-US').format(product.price)}
         </p>
+        
         {/* Name */}
-        <Link to={`/products/${product.slug}`}>
-          <h3 className="text-base text-amado-dark hover:text-amado-primary transition-colors duration-500 mb-1">
-            {product.name}
-          </h3>
-        </Link>
+        <h3 className="text-base text-amado-dark group-hover:text-amado-primary transition-colors duration-500 mb-1">
+          {product.name}
+        </h3>
+        
+        {/* Yellow line under name */}
+        <div className="w-12 h-[2px] bg-yellow-400 mb-2 transition-all duration-500 group-hover:w-20" />
         
         {/* Brand */}
         <p className="text-sm text-gray-500">{product.brand}</p>
@@ -93,6 +101,6 @@ export function ProductCard({ product }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

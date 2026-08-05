@@ -13,13 +13,11 @@ import {
   Menu,
   X,
   Search,
-  Heart,
   MessageCircle,
 } from 'lucide-react';
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -30,7 +28,8 @@ export function Sidebar() {
     { path: '/products', label: 'فروشگاه', icon: ShoppingBag },
     { path: '/cart', label: 'سبد خرید', icon: ShoppingCart, badge: itemCount },
     { path: '/orders', label: 'سفارشات', icon: Package },
-    { path: '/assistant', label: 'دستیار هوشمند', icon: MessageCircle },
+    { path: '/assistant', label: 'دستیار هوش مصنوعی', icon: MessageCircle, hoverColor: 'blue' },
+    { path: '/products', label: 'جستجو', icon: Search },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -66,7 +65,11 @@ export function Sidebar() {
         {/* Logo */}
         <div className="px-[75px] pt-[60px] pb-[100px]">
           <Link to="/" className="block">
-            <h1 className="text-2xl font-bold tracking-tight text-amado-dark">Laptop Store</h1>
+            <img 
+              src="https://c654815.parspack.net/c654815/resume_projects/ChatGPT%20Image%20Aug%204%2C%202026%2C%2011_33_37%20AM.png" 
+              alt="Laptop Store Logo"
+              className="w-full h-auto max-h-[78px] object-contain"
+            />
           </Link>
         </div>
 
@@ -79,11 +82,13 @@ export function Sidebar() {
                   to={item.path}
                   onClick={() => setIsOpen(false)}
                   className={`
-                    relative block py-5 text-sm uppercase
+                    relative block py-5 text-base
                     transition-all duration-500
                     ${isActive(item.path)
                       ? 'text-amado-primary'
-                      : 'text-amado-dark hover:text-amado-primary'
+                      : item.hoverColor === 'blue'
+                        ? 'text-amado-dark hover:bg-blue-100 hover:text-blue-900'
+                        : 'text-amado-dark hover:bg-yellow-100'
                     }
                   `}
                 >
@@ -104,27 +109,29 @@ export function Sidebar() {
                 </Link>
               </li>
             ))}
+            {/* Contact Us */}
+            <li>
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  alert('تماس با ما:\nایمیل: info@laptopstore.ir\nتلفن: ۰۲۱-۱۲۳۴۵۶۷۸');
+                }}
+                className="relative block py-5 text-base text-amado-dark hover:bg-yellow-100 transition-all duration-500 w-full text-right"
+              >
+                <span className="relative z-10">تماس با ما</span>
+              </button>
+            </li>
           </ul>
         </nav>
 
-        {/* CTA Buttons - Amado Style */}
-        <div className="px-[75px] py-4 space-y-3">
-          <button className="w-full h-[55px] bg-amado-bg text-amado-dark text-sm uppercase font-normal hover:bg-gray-200 transition-colors">
-            تخفیف ویژه
-          </button>
-          <button className="w-full h-[55px] bg-amado-dark text-white text-sm uppercase font-normal hover:bg-gray-800 transition-colors">
-            جدید این هفته
-          </button>
-        </div>
-
-        {/* Auth & Favorites - Amado Style */}
+        {/* Auth - Amado Style */}
         <div className="px-[75px] py-6">
           <div className="space-y-4">
             {isAuthenticated ? (
               <>
                 <Link
                   to="/profile"
-                  className="flex items-center gap-3 text-sm uppercase text-amado-dark hover:text-amado-primary transition-colors"
+                  className="flex items-center gap-3 text-sm text-amado-dark hover:text-amado-primary transition-colors"
                 >
                   <User size={16} />
                   <span>
@@ -133,7 +140,7 @@ export function Sidebar() {
                 </Link>
                 <button
                   onClick={() => { logout(); navigate('/'); }}
-                  className="flex items-center gap-3 text-sm uppercase text-amado-dark hover:text-red-500 transition-colors w-full"
+                  className="flex items-center gap-3 text-sm text-amado-dark hover:text-red-500 transition-colors w-full"
                 >
                   <LogOut size={16} />
                   <span>خروج</span>
@@ -142,23 +149,12 @@ export function Sidebar() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-3 text-sm uppercase text-amado-dark hover:text-amado-primary transition-colors"
+                className="flex items-center gap-3 text-sm text-amado-dark hover:text-amado-primary transition-colors"
               >
                 <LogIn size={16} />
                 <span>ورود / ثبت نام</span>
               </Link>
             )}
-            <button className="flex items-center gap-3 text-sm uppercase text-amado-dark hover:text-amado-primary transition-colors w-full">
-              <Heart size={16} />
-              <span>علاقه‌مندی‌ها</span>
-            </button>
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="lg:hidden flex items-center gap-3 text-sm uppercase text-amado-dark hover:text-amado-primary transition-colors w-full"
-            >
-              <Search size={16} />
-              <span>جستجو</span>
-            </button>
           </div>
         </div>
 
