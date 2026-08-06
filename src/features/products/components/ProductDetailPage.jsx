@@ -13,6 +13,11 @@ import {
   ChevronRight,
   ZoomIn,
   X,
+  Package,
+  TrendingUp,
+  Award,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 
 export default function ProductDetailPage() {
@@ -28,6 +33,8 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [addStatus, setAddStatus] = useState(null);
 
   const images =
     product?.images?.length > 0
@@ -56,14 +63,18 @@ export default function ProductDetailPage() {
   if (productError) {
     console.error('Product fetch error:', productError);
     return (
-      <div className="text-center py-20">
-        <p className="text-lg text-red-500">خطا در بارگذاری محصول</p>
-        <p className="text-sm text-gray-500 mt-2">{productError.message}</p>
+      <div className="flex flex-col items-center justify-center py-20 animate-fadeIn">
+        <div className="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center mb-6">
+          <AlertCircle size={40} className="text-red-300" />
+        </div>
+        <h2 className="text-2xl font-bold text-[#131212] mb-3">خطا در بارگذاری محصول</h2>
+        <p className="text-gray-400 mb-6">{productError.message}</p>
         <Link
           to="/products"
-          className="text-gray-900 underline mt-4 inline-block"
+          className="inline-flex items-center gap-2 bg-[#131212] text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg shadow-gray-200 font-medium group"
         >
-          بازگشت به فروشگاه
+          <span>بازگشت به فروشگاه</span>
+          <ArrowRight size={18} className="group-hover:-translate-x-1 transition-transform" />
         </Link>
       </div>
     );
@@ -71,28 +82,52 @@ export default function ProductDetailPage() {
 
   if (productLoading) {
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 size={48} className="animate-spin text-gray-400" />
+      <div className="flex flex-col items-center justify-center h-96 gap-4">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-blue-100 rounded-full animate-spin border-t-blue-600"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Package size={20} className="text-blue-600 animate-pulse" />
+          </div>
+        </div>
+        <p className="text-blue-600 font-medium animate-pulse">بارگذاری محصول...</p>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="text-center py-20">
-        <p className="text-lg text-gray-500">محصول یافت نشد</p>
+      <div className="flex flex-col items-center justify-center py-20 animate-fadeIn">
+        <div className="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center mb-6">
+          <Package size={40} className="text-red-300" />
+        </div>
+        <h2 className="text-2xl font-bold text-[#131212] mb-3">محصول یافت نشد</h2>
+        <p className="text-gray-400 mb-6">محصول مورد نظر موجود نمی‌باشد</p>
         <Link
           to="/products"
-          className="text-gray-900 underline mt-2 inline-block"
+          className="inline-flex items-center gap-2 bg-[#131212] text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg shadow-gray-200 font-medium group"
         >
-          بازگشت به فروشگاه
+          <span>بازگشت به فروشگاه</span>
+          <ArrowRight size={18} className="group-hover:-translate-x-1 transition-transform" />
         </Link>
       </div>
     );
   }
 
   const handleAddToCart = () => {
-    addItem.mutate({ product_slug: product.slug, quantity });
+    setAddStatus(null);
+    addItem.mutate(
+      { product_slug: product.slug, quantity },
+      {
+        onSuccess: () => {
+          setAddStatus('success');
+          setTimeout(() => setAddStatus(null), 3000);
+        },
+        onError: () => {
+          setAddStatus('error');
+          setTimeout(() => setAddStatus(null), 3000);
+        },
+      }
+    );
   };
 
   const nextImage = () => {
@@ -105,21 +140,44 @@ export default function ProductDetailPage() {
 
   const avgRating = Math.round(product.average_rating || 0);
 
+  // Format price with English numbers
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US').format(price);
+  };
+
   return (
-    <div className="relative">
+    <div className="px-4 lg:px-0 relative animate-fadeIn">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link to="/products" className="hover:text-gray-900 transition-colors">
+      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+        <Link to="/products" className="hover:text-blue-600 transition-colors font-medium">
           فروشگاه
         </Link>
-        <ArrowRight size={14} />
-        <span className="text-gray-900 font-medium">{product.name}</span>
+        <ChevronLeft size={14} className="text-gray-300" />
+        <span className="text-[#131212] font-bold">{product.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      {/* Feedback toast */}
+      {addStatus === 'success' && (
+        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-700 animate-slideDown">
+          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+            <CheckCircle size={18} className="text-emerald-600" />
+          </div>
+          <span className="font-medium">محصول با موفقیت به سبد اضافه شد</span>
+        </div>
+      )}
+      {addStatus === 'error' && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-700 animate-slideDown">
+          <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+            <AlertCircle size={18} className="text-red-600" />
+          </div>
+          <span className="font-medium">خطا در افزودن به سبد. لطفاً دوباره تلاش کنید</span>
+        </div>
+      )}
+
+      <div className="flex flex-col lg:flex-row gap-10">
         {/* ===== IMAGE GALLERY ===== */}
-        <div className="space-y-4">
-          <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden group">
+        <div className="lg:w-1/2 space-y-4">
+          <div className="relative aspect-square bg-white rounded-2xl overflow-hidden border border-blue-100 shadow-lg shadow-blue-50 group">
             <img
               src={images[selectedImage]}
               alt={product.name}
@@ -132,28 +190,37 @@ export default function ProductDetailPage() {
 
             <button
               onClick={() => setIsLightboxOpen(true)}
-              className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-sm rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:scale-110"
             >
-              <ZoomIn size={20} className="text-gray-700" />
+              <ZoomIn size={20} className="text-[#131212]" />
             </button>
+
+            {/* Stock badge */}
+            <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg ${
+              product.stock > 0 
+                ? 'bg-emerald-500 text-white shadow-emerald-200' 
+                : 'bg-red-500 text-white shadow-red-200'
+            }`}>
+              {product.stock > 0 ? 'موجود' : 'ناموجود'}
+            </div>
 
             {images.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-70 hover:opacity-100 transition-opacity shadow-md"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
                   aria-label="تصویر قبلی"
                 >
-                  <ChevronLeft size={24} className="text-gray-700" />
+                  <ChevronLeft size={20} className="text-[#131212]" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-70 hover:opacity-100 transition-opacity shadow-md"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
                   aria-label="تصویر بعدی"
                 >
-                  <ChevronRight size={24} className="text-gray-700" />
+                  <ChevronRight size={20} className="text-[#131212]" />
                 </button>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/60 text-white text-sm rounded-full">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#131212]/80 backdrop-blur-sm text-white text-xs font-medium rounded-xl">
                   {selectedImage + 1} / {images.length}
                 </div>
               </>
@@ -166,10 +233,10 @@ export default function ProductDetailPage() {
                 <button
                   key={`thumb-${idx}`}
                   onClick={() => setSelectedImage(idx)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
                     selectedImage === idx
-                      ? 'border-gray-900 ring-2 ring-gray-900/20'
-                      : 'border-transparent hover:border-gray-300'
+                      ? 'border-blue-600 ring-2 ring-blue-200 shadow-md'
+                      : 'border-blue-100 hover:border-blue-300'
                   }`}
                 >
                   <img
@@ -187,186 +254,271 @@ export default function ProductDetailPage() {
         </div>
 
         {/* ===== PRODUCT INFO ===== */}
-        <div>
-          <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {product.name}
-          </h1>
-
-          {/* Rating with number */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={`star-${star}`}
-                  size={18}
-                  className={
-                    star <= avgRating
-                      ? 'text-amber-500 fill-amber-500'
-                      : 'text-gray-300'
-                  }
+        <div className="lg:w-1/2">
+          <div className="bg-white rounded-2xl border border-blue-100 p-8 shadow-lg shadow-blue-50">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                {product.brand && (
+                  <p className="text-sm text-blue-600 font-medium uppercase tracking-wider mb-1">
+                    {product.brand}
+                  </p>
+                )}
+                <h1 className="text-2xl font-bold text-[#131212]">
+                  {product.name}
+                </h1>
+              </div>
+              <button
+                onClick={() => setIsWishlisted(!isWishlisted)}
+                className="w-10 h-10 rounded-xl border border-blue-100 flex items-center justify-center hover:bg-blue-50 transition-all duration-300 hover:scale-110 group"
+              >
+                <Heart 
+                  size={18} 
+                  className={`transition-colors duration-300 ${
+                    isWishlisted 
+                      ? 'text-red-500 fill-red-500' 
+                      : 'text-gray-400 group-hover:text-red-400'
+                  }`} 
                 />
-              ))}
-            </div>
-            <span className="text-sm font-medium text-gray-700">
-              {product.average_rating || 0}
-            </span>
-            <span className="text-sm text-gray-500">
-              ({reviews?.length || 0} نظر)
-            </span>
-          </div>
-
-          {/* Price - English digits, no Toman */}
-          <p className="text-3xl font-bold text-gray-900 mb-6">
-            {new Intl.NumberFormat('en-US').format(product.price)}
-          </p>
-
-          {/* Description */}
-          <p className="text-gray-600 mb-6 leading-relaxed">
-            {product.description}
-          </p>
-
-          {/* Specs - showing all fields */}
-          <div className="bg-gray-50 rounded-xl p-4 mb-6">
-            <h3 className="font-semibold mb-3">مشخصات فنی</h3>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {[
-                {
-                  label: 'پردازنده',
-                  value: `${product.cpu?.manufacturer || ''} ${product.cpu?.series || ''}`,
-                },
-                {
-                  label: 'مدل CPU',
-                  value: product.cpu?.model || '-',
-                },
-                {
-                  label: 'هسته‌ها',
-                  value: product.cpu?.cores ? `${product.cpu.cores} هسته` : '-',
-                },
-                { label: 'RAM', value: `${product.ram}GB` },
-                {
-                  label: 'حافظه',
-                  value:
-                    product.storage >= 1024
-                      ? `${product.storage / 1024}TB`
-                      : `${product.storage}GB`,
-                },
-                { label: 'GPU', value: product.gpu },
-                {
-                  label: 'GPU آنبرد',
-                  value: product.on_board_gpu ? 'دارد' : 'ندارد',
-                },
-                {
-                  label: 'صفحه نمایش',
-                  value: `${product.display_size} اینچ ${product.touch_screen ? '(لمسی)' : ''}`,
-                },
-                {
-                  label: 'دسته‌بندی',
-                  value: product.category?.name || '-',
-                },
-                {
-                  label: 'موجودی',
-                  value: product.stock > 0 ? `${product.stock} عدد` : 'ناموجود',
-                  color: product.stock > 0 ? 'text-green-600' : 'text-red-500',
-                },
-              ].map((spec, idx) => (
-                <div key={`spec-${idx}`} className="flex justify-between">
-                  <span className="text-gray-500">{spec.label}</span>
-                  <span className={spec.color || ''}>{spec.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Add to cart */}
-          <div className="flex gap-4">
-            <div className="flex items-center border border-gray-200 rounded-lg">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-4 py-3 hover:bg-gray-100 transition-colors"
-              >
-                -
               </button>
-              <span className="px-4 py-3 font-medium w-12 text-center">
-                {quantity}
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3 mb-6 p-3 bg-blue-50/50 rounded-xl">
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={`star-${star}`}
+                    size={16}
+                    className={
+                      star <= avgRating
+                        ? 'text-[#fbb710] fill-[#fbb710]'
+                        : 'text-gray-300'
+                    }
+                  />
+                ))}
+              </div>
+              <span className="text-sm font-bold text-[#131212]">
+                {product.average_rating || 0}
               </span>
+              <span className="text-sm text-gray-400">
+                ({reviews?.length || 0} نظر)
+              </span>
+            </div>
+
+            {/* Price - English numbers, no Toman */}
+            <div className="flex items-end gap-3 mb-6">
+              <p className="text-3xl font-bold text-blue-600">
+                {formatPrice(product.price)}
+              </p>
+              {product.compare_price && product.compare_price > product.price && (
+                <p className="text-lg text-gray-400 line-through">
+                  {formatPrice(product.compare_price)}
+                </p>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-gray-600 mb-6 leading-relaxed border-b border-blue-50 pb-6">
+              {product.description}
+            </p>
+
+            {/* Specs */}
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-[#131212] mb-4 flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-blue-600 inline-block"></span>
+                مشخصات فنی
+              </h3>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                {[
+                  {
+                    label: 'پردازنده',
+                    value: `${product.cpu?.manufacturer || ''} ${product.cpu?.series || ''}`,
+                  },
+                  {
+                    label: 'مدل CPU',
+                    value: product.cpu?.model || '-',
+                  },
+                  {
+                    label: 'هسته‌ها',
+                    value: product.cpu?.cores ? `${product.cpu.cores} هسته` : '-',
+                  },
+                  { label: 'RAM', value: `${product.ram}GB` },
+                  {
+                    label: 'حافظه',
+                    value:
+                      product.storage >= 1024
+                        ? `${product.storage / 1024}TB`
+                        : `${product.storage}GB`,
+                  },
+                  { label: 'GPU', value: product.gpu || '-' },
+                  {
+                    label: 'GPU آنبرد',
+                    value: product.on_board_gpu ? 'دارد' : 'ندارد',
+                  },
+                  {
+                    label: 'صفحه نمایش',
+                    value: `${product.display_size || '-'} اینچ ${product.touch_screen ? '(لمسی)' : ''}`,
+                  },
+                  {
+                    label: 'دسته‌بندی',
+                    value: product.category?.name || '-',
+                  },
+                  {
+                    label: 'موجودی',
+                    value: product.stock > 0 ? `${product.stock} عدد` : 'ناموجود',
+                    color: product.stock > 0 ? 'text-emerald-600' : 'text-red-500',
+                  },
+                ].map((spec, idx) => (
+                  <div
+                    key={`spec-${idx}`}
+                    className="flex justify-between items-center p-2 bg-blue-50/30 rounded-lg"
+                  >
+                    <span className="text-gray-400 text-xs">{spec.label}</span>
+                    <span className={`text-[#131212] font-medium text-xs ${spec.color || ''}`}>
+                      {spec.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Add to cart */}
+            <div className="flex gap-3">
+              <div className="flex items-center border border-blue-200 rounded-xl overflow-hidden shadow-sm">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="px-4 py-3 hover:bg-blue-50 text-[#131212] transition-colors duration-200"
+                >
+                  -
+                </button>
+                <span className="px-4 py-3 font-bold w-12 text-center text-sm text-[#131212]">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                  className="px-4 py-3 hover:bg-blue-50 text-[#131212] transition-colors duration-200"
+                >
+                  +
+                </button>
+              </div>
               <button
-                onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                onClick={handleAddToCart}
+                disabled={product.stock === 0 || addItem.isPending}
+                className="flex-1 bg-[#fbb710] text-[#131212] px-6 py-3 rounded-xl hover:bg-[#e5a50f] transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg shadow-yellow-200 font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
-                +
+                <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" />
+                {addItem.isPending ? 'در حال افزودن...' : 'افزودن به سبد'}
               </button>
             </div>
-            <button
-              onClick={handleAddToCart}
-              disabled={product.stock === 0 || addItem.isPending}
-              className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              <ShoppingCart size={18} />
-              {addItem.isPending ? 'در حال افزودن...' : 'افزودن به سبد'}
-            </button>
-            <button className="w-14 h-14 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
-              <Heart size={20} />
-            </button>
+
+            {/* Quick info */}
+            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-blue-50 text-xs text-gray-400">
+              <span className="flex items-center gap-1">
+                <Award size={14} className="text-blue-600" />
+                ضمانت اصالت
+              </span>
+              <span className="flex items-center gap-1">
+                <TrendingUp size={14} className="text-blue-600" />
+                ارسال سریع
+              </span>
+              {product.stock > 0 && product.stock < 5 && (
+                <span className="flex items-center gap-1 text-amber-600 font-medium">
+                  <AlertCircle size={14} />
+                  تعداد محدود
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ===== REVIEWS - Blue background, yellow stars ===== */}
+      {/* ===== REVIEWS ===== */}
       <div className="mt-16">
-        <h2 className="text-2xl font-bold mb-6">نظرات مشتریان</h2>
+        <div className="relative mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-[#131212] flex items-center gap-3">
+                <span className="w-10 h-10 rounded-xl bg-[#fbb710] flex items-center justify-center shadow-lg shadow-yellow-200">
+                  <Star size={22} className="text-[#131212]" />
+                </span>
+                نظرات مشتریان
+              </h2>
+              <p className="text-blue-500 mr-13 flex items-center gap-2 mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-pulse"></span>
+                {reviews?.length || 0} نظر ثبت شده
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 text-lg font-bold text-[#131212]">
+                {product.average_rating || 0}
+                <Star size={16} className="text-[#fbb710] fill-[#fbb710]" />
+              </div>
+            </div>
+          </div>
+          <div className="absolute bottom-0 right-0 left-0 h-0.5 bg-gradient-to-r from-transparent via-[#fbb710] to-transparent opacity-30"></div>
+        </div>
+
         {reviews && reviews.length > 0 ? (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {reviews.map((review, idx) => (
               <div
                 key={review.id ?? `review-${idx}`}
-                className="bg-blue-50 border border-blue-100 rounded-xl p-6"
+                className="bg-white rounded-2xl border border-blue-100 p-6 shadow-lg shadow-blue-50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-slideDown"
+                style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-sm font-bold text-blue-900">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-200">
                     {review.user?.first_name?.[0] || 'U'}
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
+                  <div className="flex-1">
+                    <p className="font-bold text-[#131212]">
                       {review.user?.first_name || 'کاربر'} {review.user?.last_name || ''}
                     </p>
-                    <div className="flex">
+                    <div className="flex mt-1 gap-0.5">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={`review-${idx}-star-${star}`}
                           size={14}
                           className={
                             star <= review.rating
-                              ? 'text-yellow-400 fill-yellow-400'
-                              : 'text-gray-300'
+                              ? 'text-[#fbb710] fill-[#fbb710]'
+                              : 'text-gray-200'
                           }
                         />
                       ))}
                     </div>
                   </div>
-                  <span className="mr-auto text-sm text-gray-400">
+                  <span className="text-xs text-gray-400 shrink-0">
                     {review.created_at
                       ? new Date(review.created_at).toLocaleDateString('fa-IR')
                       : ''}
                   </span>
                 </div>
-                <p className="text-gray-700">{review.comment}</p>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  {review.comment}
+                </p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">هنوز نظری ثبت نشده</p>
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-blue-100">
+            <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+              <Star size={32} className="text-blue-300" />
+            </div>
+            <p className="text-gray-400 font-medium">هنوز نظری ثبت نشده</p>
+            <p className="text-sm text-gray-300 mt-1">اولین نفری باشید که نظر می‌دهید</p>
+          </div>
         )}
       </div>
 
       {/* Lightbox */}
       {isLightboxOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-fadeIn"
           onClick={() => setIsLightboxOpen(false)}
         >
           <button
-            className="absolute top-4 right-4 p-2 text-white hover:text-gray-300"
+            className="absolute top-6 right-6 p-3 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-110"
             onClick={() => setIsLightboxOpen(false)}
           >
             <X size={32} />
@@ -374,7 +526,7 @@ export default function ProductDetailPage() {
           <img
             src={images[selectedImage]}
             alt={product.name}
-            className="max-w-full max-h-[90vh] object-contain"
+            className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
           {images.length > 1 && (
@@ -384,23 +536,54 @@ export default function ProductDetailPage() {
                   e.stopPropagation();
                   prevImage();
                 }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 rounded-full text-white hover:bg-white/20"
+                className="absolute left-6 top-1/2 -translate-y-1/2 p-4 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition-all duration-300 hover:scale-110"
               >
-                <ChevronLeft size={32} />
+                <ChevronLeft size={28} />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   nextImage();
                 }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 rounded-full text-white hover:bg-white/20"
+                className="absolute right-6 top-1/2 -translate-y-1/2 p-4 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition-all duration-300 hover:scale-110"
               >
-                <ChevronRight size={32} />
+                <ChevronRight size={28} />
               </button>
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl text-white text-sm font-medium">
+                {selectedImage + 1} / {images.length}
+              </div>
             </>
           )}
         </div>
       )}
+
+      {/* CSS Animations */}
+      <style jsx>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        .animate-slideDown {
+          animation: slideDown 0.5s ease-out forwards;
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

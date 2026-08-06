@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { authApi } from '../api/auth';
 import { cartApi } from '../api/cart';
 import { useAuthStore } from '../stores/authStore';
@@ -9,8 +10,20 @@ export function useAuth() {
   const { setUser, setTokens, logout } = useAuthStore();
   const { items: guestItems, clearCart: clearGuestCart } = useCartStore();
 
-  // Reactive auth state
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // ─── FIX: Sync profile data to Zustand store ───
+  const profile = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => authApi.getProfile().then((res) => res.data),
+    enabled: isAuthenticated,
+  });
+
+  useEffect(() => {
+    if (profile.data) {
+      setUser(profile.data);
+    }
+  }, [profile.data, setUser]);
 
   // Login with password
   const login = useMutation({
@@ -29,11 +42,9 @@ export function useAuth() {
     mutationFn: (phone_number) => authApi.sendOTP(phone_number).then((res) => res.data),
   });
 
-  // Login with OTP - verify OTP
   // Verify OTP
   const verifyOTP = useMutation({
     mutationFn: (data) => {
-      // Fix field name mismatch from LoginPage
       const payload = {
         phone_number: data.phone_number || data.phone,
         code: data.code || data.otp_code,
@@ -44,7 +55,6 @@ export function useAuth() {
       const tokens = data.tokens || data;
       setTokens(tokens.access, tokens.refresh);
       
-      // 🛒 Sync guest cart to API after OTP login
       const guestItems = useCartStore.getState().items;
       if (guestItems.length > 0) {
         for (const item of guestItems) {
@@ -112,16 +122,6 @@ export function useAuth() {
     onError: () => {
       logout();
       queryClient.clear();
-    },
-  });
-
-  // Get profile
-  const profile = useQuery({
-    queryKey: ['profile'],
-    queryFn: () => authApi.getProfile().then((res) => res.data),
-    enabled: isAuthenticated,
-    onSuccess: (data) => {
-      setUser(data);
     },
   });
 

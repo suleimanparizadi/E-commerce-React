@@ -1,58 +1,70 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAssistant } from '../hooks/useAssistant';
-import { Send, User, Bot, Loader2, Sparkles, ImageOff } from 'lucide-react';
+import { Send, User, Bot, Loader2, Sparkles, ImageOff, MessageSquare, Zap, ChevronRight } from 'lucide-react';
 
 // Renders either a plain string or a structured object { message, products }
 function MessageContent({ content }) {
   if (typeof content === 'string') {
-    return <p>{content}</p>;
+    return <p className="leading-relaxed">{content}</p>;
   }
 
   if (content && typeof content === 'object') {
     return (
-      <div className="space-y-3">
-        {content.message && <p>{content.message}</p>}
+      <div className="space-y-4">
+        {content.message && <p className="leading-relaxed">{content.message}</p>}
 
         {Array.isArray(content.products) && content.products.length > 0 && (
-          <div className="space-y-2 mt-2">
-            <p className="text-xs font-bold text-blue-700 uppercase">محصولات پیشنهادی:</p>
-            {content.products.map((product, i) => (
-              <Link
-                key={i}
-                to={product.slug ? `/products/${product.slug}` : '#'}
-                className="flex items-center gap-3 bg-white border border-blue-200 p-2 hover:bg-blue-100 transition-colors"
-              >
-                {product.thumbnail ? (
-                  <img
-                    src={product.thumbnail}
-                    alt={product.name || ''}
-                    className="w-12 h-12 object-cover bg-gray-50 shrink-0"
-                  />
-                ) : (
-                  <div className="w-12 h-12 bg-gray-100 flex items-center justify-center shrink-0">
-                    <ImageOff size={16} className="text-gray-400" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-blue-900 truncate text-sm">
-                    {product.name || 'محصول نامشخص'}
-                  </p>
-                  {product.price !== undefined && (
-                    <p className="text-xs text-blue-700">
-                      {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
-                    </p>
+          <div className="space-y-3 mt-4">
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-blue-600 inline-block"></span>
+              محصولات پیشنهادی
+            </p>
+            <div className="grid gap-2">
+              {content.products.map((product, i) => (
+                <Link
+                  key={i}
+                  to={product.slug ? `/products/${product.slug}` : '#'}
+                  className="flex items-center gap-3 bg-white rounded-xl border border-blue-100 p-3 hover:border-blue-300 hover:shadow-md transition-all duration-300 group"
+                >
+                  {product.thumbnail ? (
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-50 border border-blue-50 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                      <img
+                        src={product.thumbnail}
+                        alt={product.name || ''}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-14 h-14 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-blue-50">
+                      <ImageOff size={20} className="text-gray-300" />
+                    </div>
                   )}
-                </div>
-              </Link>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[#131212] truncate text-sm group-hover:text-blue-600 transition-colors">
+                      {product.name || 'محصول نامشخص'}
+                    </p>
+                    {product.price !== undefined && (
+                      <p className="text-xs text-blue-600 font-medium mt-0.5">
+                        {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
+                      </p>
+                    )}
+                  </div>
+                  <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
     );
   }
 
-  return <p>{String(content)}</p>;
+  return <p className="leading-relaxed">{String(content)}</p>;
 }
 
 export default function AssistantPage() {
@@ -107,84 +119,172 @@ export default function AssistantPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-40px)] px-4 lg:px-0">
+    <div className="flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-40px)] px-4 lg:px-0 animate-fadeIn">
       {/* Header */}
-      <div className="bg-white border border-gray-100 p-6 mb-4 flex items-center gap-4">
-        <div className="w-12 h-12 bg-blue-600 flex items-center justify-center">
-          <Sparkles size={24} className="text-white" />
+      <div className="bg-white rounded-2xl border border-blue-100 p-6 mb-4 flex items-center gap-4 shadow-lg shadow-blue-50 hover:shadow-xl transition-shadow duration-300">
+        <div className="relative">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-200">
+            <Sparkles size={24} className="text-white" />
+          </div>
+          <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#fbb710] flex items-center justify-center shadow-md shadow-yellow-200">
+            <Zap size={12} className="text-[#131212]" />
+          </div>
         </div>
-        <div>
-          <h1 className="text-lg text-amado-dark font-normal uppercase">دستیار هوشمند</h1>
-          <p className="text-xs text-gray-500">پاسخگوی سوالات شما درباره لپ‌تاپ</p>
+        <div className="flex-1">
+          <h1 className="text-lg font-bold text-[#131212] flex items-center gap-2">
+            دستیار هوشمند
+            <span className="text-xs bg-blue-100 text-blue-600 px-2.5 py-1 rounded-full font-medium">
+              AI
+            </span>
+          </h1>
+          <p className="text-sm text-gray-400 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+            پاسخگوی سوالات شما درباره لپ‌تاپ
+          </p>
         </div>
         {chat.isPending && (
-          <span className="mr-auto text-xs text-gray-400 flex items-center gap-1">
-            <Loader2 size={12} className="animate-spin" />
-            در حال تایپ...
-          </span>
+          <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+            <Loader2 size={14} className="animate-spin" />
+            <span className="font-medium">در حال تایپ...</span>
+          </div>
         )}
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto bg-white border border-gray-100 p-6 mb-4 space-y-6">
+      <div className="flex-1 overflow-y-auto bg-white rounded-2xl border border-blue-100 p-6 mb-4 space-y-6 shadow-lg shadow-blue-50">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+            className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-slideDown`}
+            style={{ animationDelay: `${idx * 50}ms` }}
           >
             {/* Avatar */}
             <div
-              className={`w-10 h-10 flex items-center justify-center shrink-0 ${
-                msg.role === 'user' ? 'bg-yellow-500' : 'bg-blue-600'
-              }`}
+              className={`
+                w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-lg
+                ${msg.role === 'user' 
+                  ? 'bg-[#fbb710] shadow-yellow-200' 
+                  : 'bg-gradient-to-br from-blue-600 to-blue-700 shadow-blue-200'
+                }
+                transition-transform duration-300 hover:scale-105
+              `}
             >
               {msg.role === 'user' ? (
-                <User size={18} className="text-white" />
+                <User size={20} className="text-[#131212]" />
               ) : (
-                <Bot size={18} className="text-white" />
+                <Bot size={20} className="text-white" />
               )}
             </div>
 
             {/* Message bubble */}
             <div
-              className={`max-w-[80%] p-6 text-sm leading-relaxed ${
-                msg.role === 'user'
-                  ? 'bg-yellow-100 text-yellow-900 border border-yellow-200'
-                  : 'bg-blue-50 text-blue-900 border border-blue-100'
-              }`}
+              className={`
+                max-w-[80%] p-5 rounded-2xl text-sm leading-relaxed shadow-sm
+                ${msg.role === 'user'
+                  ? 'bg-[#fbb710]/10 text-[#131212] border border-[#fbb710]/20'
+                  : 'bg-blue-50/50 text-[#131212] border border-blue-100'
+                }
+                hover:shadow-md transition-shadow duration-300
+              `}
             >
               <MessageContent content={msg.content} />
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
+        
+        {/* Empty state with typing indicator */}
+        {chat.isPending && messages.length > 0 && (
+          <div className="flex gap-4 animate-slideDown">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-200">
+              <Bot size={20} className="text-white" />
+            </div>
+            <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5">
+              <div className="flex gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-gray-100 p-4 flex gap-4"
+        className="bg-white rounded-2xl border border-blue-100 p-2 flex gap-3 shadow-lg shadow-blue-50 focus-within:shadow-xl focus-within:border-blue-300 transition-all duration-300"
       >
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="پیام خود را بنویسید..."
-          className="flex-1 px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-blue-500"
-          disabled={chat.isPending}
-        />
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="پیام خود را بنویسید..."
+            className="w-full px-5 py-3.5 bg-blue-50/50 rounded-xl border-none text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 placeholder:text-gray-400"
+            disabled={chat.isPending}
+          />
+          {!input && !chat.isPending && (
+            <MessageSquare size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+          )}
+        </div>
         <button
           type="submit"
           disabled={!input.trim() || chat.isPending}
-          className="w-14 h-14 bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`
+            w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300
+            ${!input.trim() || chat.isPending
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'bg-[#131212] text-white hover:bg-gray-800 hover:scale-105 hover:shadow-lg shadow-gray-200'
+            }
+          `}
         >
           {chat.isPending ? (
             <Loader2 size={20} className="animate-spin" />
           ) : (
-            <Send size={20} />
+            <Send size={20} className={input.trim() ? 'group-hover:translate-x-0.5 transition-transform' : ''} />
           )}
         </button>
       </form>
+
+      {/* CSS Animations */}
+      <style jsx>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes bounce {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-6px);
+          }
+        }
+        .animate-slideDown {
+          animation: slideDown 0.4s ease-out forwards;
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+        .animate-bounce {
+          animation: bounce 1s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

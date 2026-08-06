@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Eye, EyeOff, ArrowRight, Loader2, Smartphone, Lock, User, Mail, Calendar, Check } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Loader2, Smartphone, Lock, User, Mail, Calendar, Check, UserPlus, Shield, ChevronRight } from 'lucide-react';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export default function RegisterPage() {
     setFormError('');
   };
 
-    const handleSendOTP = (e) => {
+  const handleSendOTP = (e) => {
     e.preventDefault();
     setFormError('');
 
@@ -54,7 +54,7 @@ export default function RegisterPage() {
       first_name: formData.first_name,
       last_name: formData.last_name,
       password: formData.password,
-      password_confirm: formData.confirm_password,  // <-- THIS WAS MISSING!
+      password_confirm: formData.confirm_password,
     };
 
     if (formData.email?.trim()) {
@@ -106,264 +106,310 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amado-bg px-4">
-      <div className="w-full max-w-md bg-white p-12">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-2xl text-amado-dark font-normal mb-2 uppercase">ثبت نام</h1>
-          <p className="text-gray-500 text-sm">
-            {step === 'form' && 'اطلاعات خود را وارد کنید'}
-            {step === 'otp' && 'کد تأیید را وارد کنید'}
-          </p>
-        </div>
-
-        {/* Error banner */}
-        {formError && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded">
-            {formError}
-          </div>
-        )}
-
-        {/* Step 1: Full Registration Form */}
-        {step === 'form' && (
-          <form onSubmit={handleSendOTP} className="space-y-5">
-            {/* Phone */}
-            <div>
-              <label className="block text-sm text-gray-500 uppercase mb-2">
-                شماره موبایل *
-              </label>
-              <div className="relative">
-                <Smartphone size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="tel"
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                  className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
-                  required
-                />
-              </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-[#fbb710]/5 px-4 animate-fadeIn">
+      <div className="w-full max-w-md">
+        {/* Card */}
+        <div className="bg-white rounded-2xl border border-blue-100 p-8 shadow-2xl shadow-blue-100/50 hover:shadow-blue-200/50 transition-shadow duration-300">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-[#fbb710] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-yellow-200">
+              <UserPlus size={28} className="text-[#131212]" />
             </div>
+            <h1 className="text-2xl font-bold text-[#131212] mb-2">ثبت نام</h1>
+            <p className="text-gray-400 text-sm">
+              {step === 'form' && 'اطلاعات خود را وارد کنید'}
+              {step === 'otp' && 'کد تأیید را وارد کنید'}
+            </p>
+          </div>
 
-            {/* Name fields */}
-            <div className="grid grid-cols-2 gap-4">
+          {/* Error banner */}
+          {formError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-700 animate-slideDown">
+              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <span className="text-red-600 font-bold">!</span>
+              </div>
+              <span className="font-medium text-sm">{formError}</span>
+            </div>
+          )}
+
+          {/* Step 1: Full Registration Form */}
+          {step === 'form' && (
+            <form onSubmit={handleSendOTP} className="space-y-4">
+              {/* Phone */}
               <div>
-                <label className="block text-sm text-gray-500 uppercase mb-2">
-                  نام *
+                <label className="block text-sm font-medium text-[#131212] mb-2">
+                  شماره موبایل <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <User size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Smartphone size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
-                    type="text"
-                    name="first_name"
-                    value={formData.first_name}
+                    type="tel"
+                    name="phone_number"
+                    value={formData.phone_number}
                     onChange={handleChange}
-                    placeholder="علی"
-                    className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
+                    placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+                    className="w-full pr-12 pl-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 placeholder:text-gray-400"
                     required
                   />
                 </div>
               </div>
 
+              {/* Name fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#131212] mb-2">
+                    نام <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      name="first_name"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      placeholder="علی"
+                      className="w-full pr-12 pl-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#131212] mb-2">
+                    نام خانوادگی <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    placeholder="احمدی"
+                    className="w-full px-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 placeholder:text-gray-400"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
               <div>
-                <label className="block text-sm text-gray-500 uppercase mb-2">
-                  نام خانوادگی *
+                <label className="block text-sm font-medium text-[#131212] mb-2">
+                  ایمیل <span className="text-gray-400 text-xs">(اختیاری)</span>
+                </label>
+                <div className="relative">
+                  <Mail size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="example@email.com"
+                    className="w-full pr-12 pl-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium text-[#131212] mb-2">
+                  رمز عبور <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Lock size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full pr-12 pl-12 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 placeholder:text-gray-400"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#131212] transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-medium text-[#131212] mb-2">
+                  تکرار رمز عبور <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="confirm_password"
+                  value={formData.confirm_password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 placeholder:text-gray-400"
+                  required
+                />
+              </div>
+
+              {/* Date of Birth */}
+              <div>
+                <label className="block text-sm font-medium text-[#131212] mb-2">
+                  تاریخ تولد <span className="text-gray-400 text-xs">(اختیاری)</span>
+                </label>
+                <div className="relative">
+                  <Calendar size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="date"
+                    name="date_of_birth"
+                    value={formData.date_of_birth}
+                    onChange={handleChange}
+                    className="w-full pr-12 pl-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300"
+                  />
+                </div>
+              </div>
+
+              {/* Terms */}
+              <label className="flex items-start gap-3 cursor-pointer p-3 bg-blue-50/30 rounded-xl border border-blue-100/50 hover:bg-blue-50/50 transition-colors">
+                <input
+                  type="checkbox"
+                  name="terms_accepted"
+                  checked={formData.terms_accepted}
+                  onChange={handleChange}
+                  className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
+                  required
+                />
+                <span className="text-sm text-gray-600">
+                  با <a href="#" className="text-blue-600 font-medium hover:text-blue-700 transition-colors">قوانین و مقررات</a> موافقم <span className="text-red-500">*</span>
+                </span>
+              </label>
+
+              <button
+                type="submit"
+                disabled={registerInitiate.isPending}
+                className="w-full bg-blue-600 text-white px-6 py-3.5 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg shadow-blue-200 font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
+              >
+                {registerInitiate.isPending ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    در حال ارسال کد...
+                  </>
+                ) : (
+                  <>
+                    <span>ارسال کد تأیید</span>
+                    <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* Step 2: OTP Verification */}
+          {step === 'otp' && (
+            <form onSubmit={handleVerifyOTP} className="space-y-5">
+              <div className="text-center p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                <p className="text-sm text-gray-600">
+                  کد تأیید به شماره{' '}
+                  <span className="font-bold text-[#131212]">{formData.phone_number}</span>{' '}
+                  ارسال شد
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#131212] mb-2">
+                  کد تأیید <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  placeholder="احمدی"
-                  className="w-full px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  placeholder="۱۲۳۴۵۶"
+                  maxLength={6}
+                  className="w-full px-4 py-3.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[#131212] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 transition-all duration-300 text-center text-2xl tracking-widest placeholder:text-gray-300"
                   required
                 />
               </div>
-            </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm text-gray-500 uppercase mb-2">
-                ایمیل (اختیاری)
-              </label>
-              <div className="relative">
-                <Mail size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="example@email.com"
-                  className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
-                />
-              </div>
-            </div>
+              <button
+                type="submit"
+                disabled={register.isPending}
+                className="w-full bg-blue-600 text-white px-6 py-3.5 rounded-xl hover:bg-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg shadow-blue-200 font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+              >
+                {register.isPending ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    در حال ثبت نام...
+                  </>
+                ) : (
+                  <>
+                    <span>ثبت نام</span>
+                    <Check size={18} className="group-hover:scale-110 transition-transform" />
+                  </>
+                )}
+              </button>
 
-            {/* Password */}
-            <div>
-              <label className="block text-sm text-gray-500 uppercase mb-2">
-                رمز عبور *
-              </label>
-              <div className="relative">
-                <Lock size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full pr-12 pl-12 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amado-dark"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
+              <button
+                type="button"
+                onClick={() => setStep('form')}
+                className="w-full text-sm text-blue-500 hover:text-blue-600 font-medium transition-colors py-2 hover:gap-1 flex items-center justify-center gap-0.5"
+              >
+                <ArrowRight size={14} />
+                بازگشت و ارسال مجدد
+              </button>
+            </form>
+          )}
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm text-gray-500 uppercase mb-2">
-                تکرار رمز عبور *
-              </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="confirm_password"
-                value={formData.confirm_password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
-                required
-              />
-            </div>
+          {/* Login link */}
+          <div className="mt-6 pt-6 border-t border-blue-100 text-center">
+            <p className="text-sm text-gray-400">
+              قبلاً ثبت نام کرده‌اید؟{' '}
+              <Link to="/login" className="text-[#131212] font-bold hover:text-blue-600 transition-colors">
+                ورود
+              </Link>
+            </p>
+          </div>
 
-            {/* Date of Birth */}
-            <div>
-              <label className="block text-sm text-gray-500 uppercase mb-2">
-                تاریخ تولد (اختیاری)
-              </label>
-              <div className="relative">
-                <Calendar size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="date"
-                  name="date_of_birth"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                  className="w-full pr-12 pl-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary"
-                />
-              </div>
-            </div>
-
-            {/* Terms */}
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                name="terms_accepted"
-                checked={formData.terms_accepted}
-                onChange={handleChange}
-                className="mt-1 rounded-none border-gray-300 text-amado-primary focus:ring-amado-primary w-4 h-4"
-                required
-              />
-              <span className="text-sm text-gray-600">
-                با <a href="#" className="underline hover:text-amado-primary">قوانین و مقررات</a> موافقم *
-              </span>
-            </label>
-
-            <button
-              type="submit"
-              disabled={registerInitiate.isPending}
-              className="w-full amado-btn text-base flex items-center justify-center gap-2 disabled:opacity-50"
+          {/* Back to home */}
+          <div className="mt-4 text-center">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#131212] transition-colors group"
             >
-              {registerInitiate.isPending ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  در حال ارسال کد...
-                </>
-              ) : (
-                'ارسال کد تأیید'
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* Step 2: OTP Verification */}
-        {step === 'otp' && (
-          <form onSubmit={handleVerifyOTP} className="space-y-6">
-            <div className="text-center mb-4">
-              <p className="text-sm text-gray-500">
-                کد تأیید به شماره{' '}
-                <span className="font-medium text-amado-dark">{formData.phone_number}</span>{' '}
-                ارسال شد
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-500 uppercase mb-2">
-                کد تأیید *
-              </label>
-              <input
-                type="text"
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
-                placeholder="۱۲۳۴۵۶"
-                maxLength={6}
-                className="w-full px-4 py-4 bg-amado-bg border-none text-amado-dark focus:outline-none focus:ring-2 focus:ring-amado-primary text-center text-2xl tracking-widest"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={register.isPending}
-              className="w-full amado-btn text-base flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {register.isPending ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  در حال ثبت نام...
-                </>
-              ) : (
-                'ثبت نام'
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setStep('form')}
-              className="w-full text-sm text-gray-500 hover:text-amado-dark py-2"
-            >
-              بازگشت و ارسال مجدد
-            </button>
-          </form>
-        )}
-
-        {/* Login link */}
-        <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-500">
-            قبلاً ثبت نام کرده‌اید؟{' '}
-            <Link to="/login" className="text-amado-dark font-medium hover:text-amado-primary transition-colors">
-              ورود
+              <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
+              بازگشت به فروشگاه
             </Link>
-          </p>
-        </div>
-
-        {/* Back to home */}
-        <div className="mt-4 text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-amado-dark transition-colors"
-          >
-            <ArrowRight size={14} />
-            بازگشت به فروشگاه
-          </Link>
+          </div>
         </div>
       </div>
+
+      {/* CSS Animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }
