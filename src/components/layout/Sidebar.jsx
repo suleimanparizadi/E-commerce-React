@@ -67,10 +67,10 @@ export function Sidebar() {
         </button>
 
         {/* Logo */}
-        <div className="px-[75px] pt-[60px] pb-[80px]">
+        <div className="px-[85px] pt-[70px] pb-[70px]">
           <Link to="/" className="block">
             <img 
-              src="https://c654815.parspack.net/c654815/resume_projects/ChatGPT%20Image%20Aug%204%2C%202026%2C%2011_33_37%20AM.png" 
+              src="https://c654815.parspack.net/c654815/resume_projects/logos/logo2.png" 
               alt="Laptop Store Logo"
               className="w-full h-auto max-h-[78px] object-contain"
             />
@@ -122,7 +122,7 @@ export function Sidebar() {
                         AI
                       </span>
                     )}
-                    
+                  
                     {item.badge > 0 && (
                       <span className="mr-auto bg-[#fbb710] text-[#131212] text-xs font-bold px-2.5 py-0.5 rounded-full shadow-md shadow-yellow-200">
                         {item.badge}
